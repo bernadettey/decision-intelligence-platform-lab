@@ -18,7 +18,7 @@ The project should grow incrementally. Do not create empty enterprise folders be
 
 ## Current Stage
 
-Current milestone: **M1 Backend Foundation**.
+Current milestone: **M1 Enterprise Data Foundation & Backend**.
 
 The existing implementation is a small FastAPI baseline with:
 
@@ -38,13 +38,13 @@ prototype-fastapi-mvp-baseline-2026-08-22
 
 | Milestone | Theme | Purpose |
 | --- | --- | --- |
-| M1 | Backend Foundation | Build a clean API, schemas, database path, semantic layer, and tests for business performance questions. |
-| M2 | Agentic Application | Add tool calling, simple orchestration, governed analysis steps, and traceable agent responses. |
-| M3 | Data Engineering | Build raw-to-analytics pipelines and trusted gold tables for decision workflows. |
-| M4 | Machine Learning | Add forecasting, anomaly detection, or risk prediction using generated ground truth. |
+| M1 | Enterprise Data Foundation & Backend | Establish the enterprise data architecture, scenario design, synthetic data foundation, PostgreSQL layer, and backend boundary required by later milestones. |
+| M2 | Agentic Investigation | Add tool-using investigation workflows that can inspect approved evidence and produce traceable root-cause analysis. |
+| M3 | Data Engineering | Build reliable raw-to-analytics pipelines and trusted analytical tables from generated operational and financial data. |
+| M4 | Applied Machine Learning | Add forecasting, anomaly detection, or risk scoring using scenario-linked labels and outcomes. |
 | M5 | MLOps | Track experiments, model versions, evaluation results, and reproducible inference behavior. |
-| M6 | Cloud Deployment | Containerize, deploy, configure CI/CD, and separate local from production runtime settings. |
-| M7 | Evaluation & Observability | Measure answer quality, tool choice, latency, cost, drift, and failure modes. |
+| M6 | Cloud + Security + RLS | Add production-like deployment, identity, authorization, row-level security design, and audit controls. |
+| M7 | Evaluation + Observability | Measure answer quality, tool choice, latency, cost, drift, security behavior, and failure modes. |
 
 See [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the working plan.
 
@@ -60,7 +60,7 @@ semantic_layer/       Certified business metric definitions
 tests/                Automated tests for the current implementation
 ```
 
-Future areas such as data pipelines, ML, MLOps, cloud infrastructure, and evaluation runners should be added when their milestone begins.
+Future areas such as agent orchestration, data pipelines, ML, MLOps, cloud infrastructure, security enforcement, and evaluation runners should be added when their milestone begins. The milestones are progressive layers of one platform, not separate demos.
 
 ## How To Run
 

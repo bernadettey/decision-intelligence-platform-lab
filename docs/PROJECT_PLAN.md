@@ -22,39 +22,71 @@ It is the private build space for a reusable decision workflow platform. FP&A is
 
 ## Milestones
 
-### M1: Backend Foundation
+These milestones build one Decision Intelligence Platform progressively. They are not separate demos. Each milestone should extend the same enterprise model, evidence trail, and decision workflow foundation.
 
-Goal: establish a clean, runnable backend foundation for business performance questions.
+| Milestone | Theme | Platform Capability |
+| --- | --- | --- |
+| M1 | Enterprise Data Foundation & Backend | Enterprise data model, scenario design, synthetic data foundation, PostgreSQL layer, and backend boundary. |
+| M2 | Agentic Investigation | Tool-using root-cause investigation over approved evidence. |
+| M3 | Data Engineering | Repeatable pipelines from operational events to analytical data products. |
+| M4 | Applied Machine Learning | Forecasting, anomaly detection, and risk scoring over scenario-linked outcomes. |
+| M5 | MLOps | Experiment tracking, model versioning, reproducible training, and promotion criteria. |
+| M6 | Cloud + Security + RLS | Cloud-ready deployment, identity, authorization, row-level security, and audit behavior. |
+| M7 | Evaluation + Observability | Automated evaluation, traces, telemetry, cost, reliability, and failure-mode monitoring. |
 
-Scope:
+### M1: Enterprise Data Foundation & Backend
 
-- FastAPI application entrypoint.
-- Health, metrics, and ask endpoints.
-- PostgreSQL schema and seed data for synthetic business performance data.
-- YAML semantic layer for certified metrics.
-- Pydantic request and response schemas.
-- Deterministic mock response path for local development.
-- Focused tests.
+Goal: establish the enterprise data architecture required by later milestones and keep a clean, runnable backend boundary for business performance questions.
 
-Out of scope:
+M1 should model a realistic B2B technology enterprise with enough structure to support future FP&A investigation, agentic root-cause analysis, data engineering, ML, MLOps, security/governance, and evaluation. M1 is not only an API cleanup milestone; it is the data foundation for the rest of the platform.
 
-- Full agent orchestration.
+M1 workstreams:
+
+#### M1.1 Enterprise Data Model
+
+Define the logical enterprise entities and relationships that later milestones will use for business performance investigation. This includes master data, operational activity, finance outcomes, planning data, security/audit concepts, and evaluation scenarios.
+
+#### M1.2 Scenario & Ground Truth Design
+
+Define controlled business scenarios and evaluator-only ground truth so future agents, pipelines, and models can be tested against known causes and expected impacts.
+
+#### M1.3 Synthetic Data Generator
+
+Design the generator approach for realistic operational and financial data. The implementation should eventually derive financial outcomes from underlying business drivers wherever practical instead of producing unrelated random numbers.
+
+#### M1.4 PostgreSQL Data Layer
+
+Design and implement the local PostgreSQL data layer needed for M1, with clear logical schemas and enough data to support business performance questions.
+
+#### M1.5 Backend Foundation
+
+Keep the FastAPI application boundary clean and runnable. The backend should expose current M1 capabilities while leaving clear extension points for later agent, data, ML, security, and evaluation layers.
+
+M1 implementation should explicitly exclude:
+
+- Agent orchestration.
 - LangGraph.
+- Databricks or Spark pipelines.
 - ML models.
+- MLflow.
 - Cloud deployment.
-- Production authentication.
-- Frontend.
+- Full row-level security enforcement.
+- AI ROI optimization.
+- Marginal resource allocation optimization.
+
+M1 should still design the data structures needed to support those later capabilities.
 
 Acceptance:
 
+- M1 documentation defines the target enterprise data model, scenario design, and milestone boundary.
 - App imports successfully.
 - Tests pass locally.
 - API endpoints can be exercised against local services.
-- README explains the current stage and the staged roadmap.
+- README explains that M1 establishes the data architecture and backend boundary for one progressive platform.
 
-### M2: Agentic Application
+### M2: Agentic Investigation
 
-Goal: turn the current ask endpoint into a traceable, tool-using analysis workflow.
+Goal: turn the current ask endpoint into a traceable, tool-using investigation workflow.
 
 Likely scope:
 
@@ -99,9 +131,9 @@ Likely scope:
 - Evaluation reports.
 - Promotion criteria for model use.
 
-### M6: Cloud Deployment
+### M6: Cloud + Security + RLS
 
-Goal: deploy the platform with production-like operational discipline.
+Goal: deploy the platform with production-like operational and security discipline.
 
 Likely scope:
 
@@ -110,8 +142,11 @@ Likely scope:
 - Environment-specific configuration.
 - Hosted API deployment.
 - Secret handling and deployment documentation.
+- Identity and role model implementation.
+- Row-level security policy implementation and tests.
+- Audit logging for sensitive data access.
 
-### M7: Evaluation & Observability
+### M7: Evaluation + Observability
 
 Goal: measure whether the decision workflow is correct, reliable, and worth trusting.
 
