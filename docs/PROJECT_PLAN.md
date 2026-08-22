@@ -46,6 +46,8 @@ M1 workstreams:
 
 Define the logical enterprise entities and relationships that later milestones will use for business performance investigation. This includes master data, operational activity, finance outcomes, planning data, security/audit concepts, and evaluation scenarios.
 
+The target PostgreSQL architecture should use logical schemas for `master`, `operations`, `finance`, `planning`, `security`, and `evaluation`. See [architecture.md](architecture.md) for the schema responsibilities and target table set.
+
 #### M1.2 Scenario & Ground Truth Design
 
 Define controlled business scenarios and evaluator-only ground truth so future agents, pipelines, and models can be tested against known causes and expected impacts.
