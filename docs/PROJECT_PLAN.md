@@ -2,7 +2,7 @@
 
 ## North Star
 
-Decision Intelligence Platform is a staged flagship project for learning and demonstrating AI Engineer to ML Engineer capability.
+Decision Intelligence Platform Lab is a private staged flagship project for learning and developing AI Engineer to ML Engineer capability.
 
 The platform answers business decision questions by combining:
 
@@ -16,9 +16,9 @@ The first implementation domain is Business Performance / FP&A investigation.
 
 ## Product Positioning
 
-The product is not an FP&A chatbot and not a commentary generator.
+The lab is not an FP&A chatbot and not a commentary generator.
 
-It is a reusable decision workflow platform. FP&A is the first use case because budget, actual, forecast, variance, revenue, margin, and cost data make it easy to create clear ground truth for later agent and ML evaluation.
+It is the private build space for a reusable decision workflow platform. FP&A is the first use case because budget, actual, forecast, variance, revenue, margin, and cost data make it easy to create clear ground truth for later agent and ML evaluation.
 
 ## Milestones
 

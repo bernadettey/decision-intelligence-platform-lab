@@ -1,4 +1,4 @@
-# Decision Intelligence Platform Architecture
+# Decision Intelligence Platform Lab Architecture
 
 ## Overview
 

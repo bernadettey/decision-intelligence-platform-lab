@@ -1,12 +1,12 @@
-# Decision Intelligence Platform
+# Decision Intelligence Platform Lab
 
-Decision Intelligence Platform is a flagship AI engineering project for building governed, evidence-backed business decision workflows.
+Decision Intelligence Platform Lab is a private learning and build lab for a future public Decision Intelligence Platform showcase. It is used to build governed, evidence-backed business decision workflows incrementally before selecting polished work for public presentation.
 
 The first use case is **Business Performance / FP&A investigation**: answering questions such as why revenue, margin, or operating profit missed budget or forecast. FP&A is the first domain implementation, not the whole product identity.
 
 ## Project Constitution
 
-This repository exists to practice and demonstrate the full path from AI Engineer to ML Engineer:
+This private lab repository exists to practice and develop the full path from AI Engineer to ML Engineer:
 
 - Backend systems with clear API boundaries.
 - Tool-using AI workflows grounded in structured business data.

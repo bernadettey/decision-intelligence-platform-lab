@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: decision-intelligence-platform-postgres
+    container_name: decision-intelligence-platform-lab-postgres
     environment:
       POSTGRES_DB: decision_intelligence
       POSTGRES_USER: fpa_user

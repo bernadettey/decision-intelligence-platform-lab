@@ -2,7 +2,7 @@
 
 ## Product Direction
 
-This project is an AI Engineer learning app for an Enterprise AI Decision Intelligence Platform.
+This project is an AI Engineer learning app for the private Decision Intelligence Platform Lab.
 
 It is not a chatbot. The target workflow is:
 

@@ -6,7 +6,9 @@ Follow the shared working rules in:
 
 ## Project Identity
 
-This repository is **Decision Intelligence Platform**.
+This repository is **Decision Intelligence Platform Lab**.
+
+It is the private lab repository for learning, iteration, and implementation work. A separate future public repository can be used for the polished showcase version.
 
 The first use case is Business Performance / FP&A investigation, but the repository should remain a reusable decision-intelligence platform rather than becoming a single-purpose FP&A commentary tool.
 
