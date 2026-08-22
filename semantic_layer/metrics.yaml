@@ -1,0 +1,73 @@
+metrics:
+  revenue:
+    description: Total sales generated before deducting costs.
+    formula: SUM(revenue)
+    synonyms:
+      - sales
+      - top line
+      - income
+    allowed_dimensions:
+      - period
+      - business_unit
+      - cost_centre
+      - region
+  operating_profit:
+    description: Profit after COGS and operating expenses.
+    formula: SUM(revenue - cogs - opex)
+    synonyms:
+      - EBIT
+      - operating income
+      - profit
+    allowed_dimensions:
+      - period
+      - business_unit
+      - cost_centre
+      - region
+  gross_margin:
+    description: Gross profit as a percentage of revenue.
+    formula: SUM(revenue - cogs) / NULLIF(SUM(revenue), 0)
+    synonyms:
+      - GM
+      - gross profit margin
+    allowed_dimensions:
+      - period
+      - business_unit
+      - cost_centre
+      - region
+  operating_margin:
+    description: Operating profit as a percentage of revenue.
+    formula: SUM(revenue - cogs - opex) / NULLIF(SUM(revenue), 0)
+    synonyms:
+      - EBIT margin
+      - operating profit margin
+    allowed_dimensions:
+      - period
+      - business_unit
+      - cost_centre
+      - region
+  budget_variance:
+    description: Difference between actuals and budget.
+    formula: actual_metric - budget_metric
+    synonyms:
+      - budget miss
+      - budget beat
+      - vs budget
+      - budget variance
+    allowed_dimensions:
+      - period
+      - business_unit
+      - cost_centre
+      - region
+  forecast_variance:
+    description: Difference between actuals and forecast.
+    formula: actual_metric - forecast_metric
+    synonyms:
+      - forecast miss
+      - forecast beat
+      - vs forecast
+      - forecast variance
+    allowed_dimensions:
+      - period
+      - business_unit
+      - cost_centre
+      - region

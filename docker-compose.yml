@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: decision-intelligence-platform-postgres
+    environment:
+      POSTGRES_DB: decision_intelligence
+      POSTGRES_USER: fpa_user
+      POSTGRES_PASSWORD: fpa_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02_seed_data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fpa_user -d decision_intelligence"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
