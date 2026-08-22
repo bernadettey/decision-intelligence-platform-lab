@@ -130,6 +130,89 @@ Controlled scenarios and benchmark data used to evaluate agents, data pipelines,
 
 Evaluation data should remain separate from operational evidence. Agents may inspect approved business evidence, but evaluator-only truth data must remain hidden from the investigation runtime.
 
+## Scenario-Driven Ground Truth Model
+
+Synthetic data generation should be built around a causal investigation chain:
+
+```text
+Business Event
+    -> Operational Driver
+    -> Transaction / Operational Data
+    -> Financial Outcome
+    -> KPI Variance
+    -> Management Question
+```
+
+Financial results should be derived from underlying drivers wherever practical rather than generated as unrelated random numbers. This is what makes the platform useful for future agent investigation and ML evaluation: there is a known causal path from business event to management question.
+
+Example:
+
+```text
+Supplier price increase
+    -> unit cost increases
+    -> supplier and order costs increase
+    -> COGS increases
+    -> gross margin decreases
+    -> operating profit misses forecast
+```
+
+Scenario types should include:
+
+- `supplier_price_increase`
+- `customer_contract_delay`
+- `customer_churn`
+- `sales_volume_decline`
+- `discounting_campaign`
+- `product_mix_deterioration`
+- `hiring_delay`
+- `headcount_overspend`
+- `contractor_cost_increase`
+- `FX_shock`
+- `cloud_cost_spike`
+- `unexpected_marketing_spend`
+- `capex_project_delay`
+- `capex_project_overspend`
+- `capex_timing_shift`
+
+The model distinguishes two separate concepts:
+
+`operations.business_events`:
+
+- Business evidence that the investigation agent may be allowed to discover.
+- Examples include supplier notices, delayed customer contracts, hiring plan changes, FX movements, marketing campaign approvals, or capex project updates.
+- Access should eventually depend on user role, business unit, region, and security policy.
+
+`evaluation.scenario_ground_truth`:
+
+- Evaluator-only benchmark data containing the known injected cause and expected causal chain.
+- Used to score agent investigation, data pipeline correctness, ML labels, security behavior, and evaluation quality.
+- The investigation agent must never have access to `scenario_ground_truth`.
+
+Ground truth should eventually support:
+
+- Scenario ID.
+- Injected business event.
+- Affected entity or dimension.
+- Expected driver.
+- Expected financial impact.
+- Expected KPI impact.
+- Primary root cause.
+- Expected causal chain.
+- Severity.
+- Expected investigation questions.
+
+Ground truth evolves across the roadmap:
+
+- M1: scenario definition.
+- M2: agent investigation benchmark.
+- M3: data pipeline validation.
+- M4: ML labels and outcome validation.
+- M5: model-version comparison.
+- M6: security/RLS expected behavior.
+- M7: automated evaluation and observability.
+
+This documentation defines the model only. It does not implement the synthetic data generator or evaluation framework.
+
 ## Request Flow
 
 1. User sends a question to `POST /ask`.

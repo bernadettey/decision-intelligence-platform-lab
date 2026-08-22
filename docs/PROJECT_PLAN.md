@@ -52,6 +52,8 @@ The target PostgreSQL architecture should use logical schemas for `master`, `ope
 
 Define controlled business scenarios and evaluator-only ground truth so future agents, pipelines, and models can be tested against known causes and expected impacts.
 
+Synthetic data should follow a causal investigation chain from business event to operational driver, transaction data, financial outcome, KPI variance, and management question. The investigation runtime may eventually inspect approved records in `operations.business_events`, but it must never access evaluator-only `evaluation.scenario_ground_truth`.
+
 #### M1.3 Synthetic Data Generator
 
 Design the generator approach for realistic operational and financial data. The implementation should eventually derive financial outcomes from underlying business drivers wherever practical instead of producing unrelated random numbers.
