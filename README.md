@@ -46,7 +46,7 @@ prototype-fastapi-mvp-baseline-2026-08-22
 | M6 | Cloud + Security + RLS | Add production-like deployment, identity, authorization, row-level security design, and audit controls. |
 | M7 | Evaluation + Observability | Measure answer quality, tool choice, latency, cost, drift, security behavior, and failure modes. |
 
-See [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the working plan.
+See [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md), [docs/M1_SCOPE.md](docs/M1_SCOPE.md), and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the working plan and finalized M1 architecture.
 
 ## Repository Shape
 
