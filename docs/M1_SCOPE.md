@@ -27,6 +27,8 @@ Define controlled business scenarios and evaluator-only ground truth. The scenar
 
 `evaluation.scenario_ground_truth` must never be available to the investigation agent.
 
+See [reference/SCENARIO_MODEL.md](reference/SCENARIO_MODEL.md) for detailed scenario and evaluation requirements.
+
 ### M1.3 Synthetic Data Generator
 
 Design synthetic data generation around business drivers and causal chains. Financial values should ultimately be derived from underlying operational activity wherever practical, not generated as unrelated random numbers.
@@ -82,3 +84,5 @@ M1 documentation should make these things clear:
 - Financial outcomes can eventually be traced from operational transactions through GL/accounting into FP&A metrics.
 - Evaluation ground truth is separate from agent-visible evidence.
 - AI usage economics is a later-milestone concern, not M1 implementation.
+
+Detailed requirements traceability lives in [reference/REQUIREMENTS_TRACEABILITY.md](reference/REQUIREMENTS_TRACEABILITY.md). Detailed security and answerability policy lives in [reference/SECURITY_AND_ANSWERABILITY.md](reference/SECURITY_AND_ANSWERABILITY.md). Future AI economics boundaries live in [reference/AI_ECONOMICS_FUTURE.md](reference/AI_ECONOMICS_FUTURE.md).

@@ -8,14 +8,20 @@ The traceability chain is:
 
 ```text
 Management Question
-    -> KPI
+    -> Intent / Metric / Entity Resolution
+    -> Required Capability
+    -> KPI / Metric
     -> Comparison Basis
     -> Dimensions
     -> Drivers
-    -> Attributes
-    -> Tables
-    -> Scenario
+    -> Required Tables
+    -> Required Attributes
+    -> Authorization Requirement
+    -> Data Sufficiency
+    -> Expected Answerability
+    -> Missing Data Behaviour
     -> Expected Investigation Path
+    -> Scenario
     -> Ground Truth
     -> Agent Result
     -> Feedback
@@ -24,6 +30,28 @@ Management Question
 This document defines the requirement model. It does not implement application code, SQL, tests, generators, or runtime behavior.
 
 ## Traceability Fields
+
+The requirements model should support:
+
+- `question_id`
+- `persona`
+- `business_question`
+- `decision_type`
+- `primary_metric`
+- `comparison_basis`
+- `dimensions`
+- `drivers`
+- `required_capabilities`
+- `required_tables`
+- `required_attributes`
+- `authorization_requirement`
+- `expected_answerability`
+- `ambiguity_behavior`
+- `missing_data_behavior`
+- `scenario_type`
+- `expected_investigation_path`
+- `ground_truth_type`
+- `priority_milestone`
 
 ### Management Question
 
@@ -38,7 +66,31 @@ Examples:
 - Did delayed hiring improve EBITDA but create future delivery risk?
 - Did a CAPEX project timing shift affect cash flow, depreciation, or EBIT?
 
-### KPI
+### Intent / Metric / Entity Resolution
+
+The interpretation step that determines what the user is asking, which metric is implied, and which entity or dimension scope applies.
+
+Examples:
+
+- "How are we doing?" may resolve to a multi-metric summary.
+- "Why are we doing badly in APAC?" requires explicit KPI interpretation or clarification.
+- "Why did margin miss forecast?" resolves to gross margin or operating margin depending on context.
+
+### Required Capability
+
+The platform capability needed to answer the question.
+
+Examples:
+
+- Metric calculation.
+- Variance analysis.
+- Driver investigation.
+- Scenario benchmark evaluation.
+- Authorization-aware data access.
+- Evidence sufficiency assessment.
+- Abstention or clarification.
+
+### KPI / Metric
 
 The metric or outcome being investigated.
 
@@ -146,6 +198,57 @@ Representative mapping:
 
 Actual financial outcomes should ultimately be traceable from operational transactions through accounting/GL records into FP&A metrics. Requirements should therefore identify both operational evidence and finance/accounting tables where relevant.
 
+### Authorization Requirement
+
+The required access scope before evidence can be exposed.
+
+Examples:
+
+- Persona can access APAC margin.
+- Persona cannot access EMEA payroll.
+- Persona can access aggregated business-unit results but not employee-level detail.
+
+Authorization is separate from answerability. A question can be answerable by the platform and still denied for a specific user.
+
+### Data Sufficiency
+
+Whether the required data exists for the requested analysis.
+
+Examples:
+
+- Required tables and attributes exist.
+- Revenue and churn exist, but NPS does not.
+- Operational evidence exists, but causal evidence is incomplete.
+
+### Expected Answerability
+
+Use exactly:
+
+- `SUPPORTED`
+- `PARTIALLY_SUPPORTED`
+- `UNSUPPORTED`
+
+### Ambiguity Behavior
+
+Use exactly:
+
+- `AUTO_RESOLVE`
+- `ASK_CLARIFICATION`
+- `MULTI_METRIC_SUMMARY`
+
+Ambiguous questions are not automatically unsupported.
+
+### Missing Data Behaviour
+
+Define what the agent should do when evidence is missing.
+
+Examples:
+
+- Answer the supported part and state the limitation.
+- Ask for clarification.
+- Abstain from unsupported causal claims.
+- Deny access without exposing protected data.
+
 ### Scenario
 
 The controlled scenario that injects or represents the business condition.
@@ -249,3 +352,16 @@ FX must be represented in the base requirements because B2B technology companies
 ## AI Usage Boundary
 
 AI usage and token economics are reserved for later milestones. Traceability may reserve future links to `operations.ai_usage`, `evaluation.agent_runs`, and `evaluation.evaluation_results`, but M1 should not implement AI ROI, marginal benefit, marginal cost, or allocation optimization.
+
+## Intentional Negative Requirements
+
+Some requirements should remain unsupported to test abstention and evidence boundaries. Do not add datasets merely to make these answerable.
+
+Negative/boundary examples:
+
+- NPS decline.
+- Customer satisfaction causing revenue decline.
+- Employee engagement causing productivity decline.
+- Competitor pricing causing churn.
+
+Correct behavior is to investigate supported adjacent evidence only when useful, state the missing evidence clearly, and avoid unsupported causal claims.

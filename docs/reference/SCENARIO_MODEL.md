@@ -201,12 +201,21 @@ Future results may include:
 - Agent run ID.
 - Score.
 - Pass/fail status.
-- Root-cause accuracy.
-- Evidence accuracy.
-- KPI accuracy.
+- `root_cause_accuracy`.
+- `numeric_accuracy`.
+- `evidence_grounding`.
+- `answerability_accuracy`.
+- `abstention_accuracy`.
+- `hallucination_rate`.
+- `ambiguity_handling_accuracy`.
+- `authorization_compliance`.
+- `rls_compliance`.
+- `tool_selection_accuracy`.
 - Security compliance.
 - Latency/cost observations.
 - Regression comparison against previous runs or versions.
+
+These evaluation concepts are reserved for future milestones. Do not implement them in this documentation reorganization task.
 
 ## Roadmap Evolution
 
