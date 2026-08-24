@@ -1,3 +1,31 @@
+INSERT INTO operations.simulation_control (
+    simulation_id,
+    current_simulation_date,
+    last_run_at,
+    random_seed,
+    simulation_speed,
+    run_status,
+    current_batch_id
+) VALUES
+    (1, '2024-02-29', NOW(), 424242, 'MONTHLY', 'READY', NULL);
+
+INSERT INTO operations.ingestion_batches (
+    batch_id,
+    simulation_id,
+    simulation_date,
+    batch_type,
+    started_at,
+    completed_at,
+    status,
+    records_generated
+) VALUES
+    (1, 1, '2024-02-29', 'BOOTSTRAP', NOW(), NOW(), 'SUCCEEDED', 75);
+
+UPDATE operations.simulation_control
+SET current_batch_id = 1,
+    updated_at = NOW()
+WHERE simulation_id = 1;
+
 INSERT INTO master.business_units (business_unit_id, business_unit_name) VALUES
     (1, 'SaaS'),
     (2, 'Professional Services'),
@@ -519,3 +547,5 @@ SELECT setval('evaluation.scenarios_scenario_id_seq', 1, TRUE);
 SELECT setval('evaluation.scenario_ground_truth_scenario_ground_truth_id_seq', 1, TRUE);
 SELECT setval('evaluation.investigation_questions_investigation_question_id_seq', 1, TRUE);
 SELECT setval('evaluation.expected_answers_expected_answer_id_seq', 1, TRUE);
+SELECT setval('operations.simulation_control_simulation_id_seq', 1, TRUE);
+SELECT setval('operations.ingestion_batches_batch_id_seq', 1, TRUE);

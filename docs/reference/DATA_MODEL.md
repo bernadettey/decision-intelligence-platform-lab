@@ -85,6 +85,134 @@ Derived management metrics should generally be calculated in transformation or s
 - Avoid building a full ERP, CRM, or PSA platform.
 - Keep the model scalable without over-engineering V1.
 
+## V1.1 Production Metadata Decisions
+
+V1.1 adds a minimal source-system foundation for historical bootstrap generation, incremental synthetic generation, replay, and future ingestion/observability. It does not implement the synthetic generator, CDC infrastructure, pipeline orchestration, Databricks, ADF, Airflow, Kafka, Debezium, agents, ML, or cloud infrastructure.
+
+### Simulation State
+
+`operations.simulation_control` persists generator state between runs:
+
+- `simulation_id`
+- `current_simulation_date`
+- `last_run_at`
+- `random_seed`
+- `simulation_speed`
+- `run_status`
+- `current_batch_id`
+- `created_at`
+- `updated_at`
+
+Future generator flow:
+
+```text
+read current_simulation_date
+-> generate next simulation period
+-> commit source rows
+-> advance simulation state
+```
+
+### Batch Lineage
+
+`operations.ingestion_batches` identifies each synthetic generation or replay run:
+
+- `batch_id`
+- `simulation_id`
+- `simulation_date`
+- `batch_type`
+- `started_at`
+- `completed_at`
+- `status`
+- `records_generated`
+- `error_message`
+
+Supported batch types:
+
+- `BOOTSTRAP`
+- `INCREMENTAL`
+- `REPLAY`
+
+Tables with `ingestion_batch_id` use a foreign key to `operations.ingestion_batches(batch_id)` where this does not create avoidable bootstrap dependency problems.
+
+### Audit Timestamps
+
+Audit metadata is added selectively, not mechanically. Operational mutable and transactional tables receive:
+
+- `created_at`
+- `updated_at`
+- `source_system`
+- `ingestion_batch_id`
+
+Finance lineage tables receive source/batch metadata appropriate to accounting traceability:
+
+- `finance.revenue_schedules`
+- `finance.journal_headers`
+- `finance.journal_lines`
+
+Reference/master tables remain simple unless they are mutable operational dimensions. `master.employees` receives audit and CDC-ready metadata because employee records change over time and support future governance/RLS.
+
+### CDC Readiness
+
+`record_version` and `is_deleted` are added only to records likely to be updated by future source simulation:
+
+- `master.employees`
+- `operations.customer_contracts`
+- `operations.subscriptions`
+- `operations.projects`
+- `operations.project_milestones`
+- `operations.customer_invoices`
+- `operations.purchases`
+- `operations.supplier_invoices`
+
+Append-style events and accounting facts do not receive deletion semantics. In particular, journals must remain append/reversal oriented. Do not model journal deletion with `is_deleted`.
+
+### Event Time vs Ingestion Time
+
+Business/event time describes when the business event happened:
+
+- `event_date`
+- `invoice_date`
+- `entry_date`
+- `period`
+- `recognition_period`
+
+System/source lifecycle time describes when a source record was created or updated:
+
+- `created_at`
+- `updated_at`
+
+Batch ingestion time describes when generation or ingestion ran:
+
+- `ingestion_batches.started_at`
+- `ingestion_batches.completed_at`
+
+Do not use ingestion timestamps as substitutes for business dates.
+
+### Future Watermarks
+
+V1.1 does not add a watermark service or ingestion pipeline. The schema is ready for later patterns such as:
+
+```text
+updated_at > last_successful_watermark
+```
+
+or:
+
+```text
+ingestion_batch_id > last_processed_batch
+```
+
+Watermark state, MERGE/upsert logic, and transformation-layer replay handling belong to later ingestion/transformation work.
+
+### Idempotency and Replay Principles
+
+- Deterministic business keys or stable primary keys should prevent duplicate synthetic records.
+- `batch_id` identifies the generation run that produced source rows.
+- `random_seed` makes synthetic generation reproducible.
+- `REPLAY` batches must be distinguishable from normal `INCREMENTAL` batches.
+- Future ingestion should be rerunnable without duplicating downstream facts.
+- MERGE/upsert behavior belongs to later ingestion/transformation layers, not this source PostgreSQL implementation.
+
 ## Target Table Inventory
 
 This inventory is documentation only, not SQL implementation.
@@ -127,6 +255,8 @@ This inventory is documentation only, not SQL implementation.
 | PLANNING | `headcount_plan` | CORE |
 | REFERENCE / OPERATIONS | `business_events` | CORE |
 | REFERENCE / OPERATIONS | `fx_rates` | CORE |
+| OPERATIONS CONTROL | `simulation_control` | V1.1 CORE |
+| OPERATIONS CONTROL | `ingestion_batches` | V1.1 CORE |
 | EVALUATION | `scenarios` | CORE |
 | EVALUATION | `scenario_ground_truth` | CORE |
 | EVALUATION | `investigation_questions` | CORE |
@@ -755,6 +885,9 @@ Future documented tables must not expand M1 implementation scope:
 | `scenario_ground_truth` | `scenario_id` | `scenarios` | Evaluator-only. |
 | `investigation_questions` | `scenario_id` | `scenarios` | Evaluation input. |
 | `expected_answers` | `investigation_question_id` | `investigation_questions` | Evaluator-only criteria. |
+| `ingestion_batches` | `simulation_id` | `simulation_control` | Generation run belongs to one simulation. |
+| `simulation_control` | `current_batch_id` | `ingestion_batches` | Nullable current batch pointer for bootstrap ordering. |
+| selected source tables | `ingestion_batch_id` | `ingestion_batches` | Batch lineage where FK-enforced. |
 
 ## Logical ERD
 

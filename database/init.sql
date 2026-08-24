@@ -4,6 +4,43 @@ CREATE SCHEMA IF NOT EXISTS finance;
 CREATE SCHEMA IF NOT EXISTS planning;
 CREATE SCHEMA IF NOT EXISTS evaluation;
 
+CREATE TABLE operations.simulation_control (
+    simulation_id SERIAL PRIMARY KEY,
+    current_simulation_date DATE NOT NULL,
+    last_run_at TIMESTAMPTZ NULL,
+    random_seed INTEGER NOT NULL,
+    simulation_speed VARCHAR(20) NOT NULL CHECK (
+        simulation_speed IN ('DAILY', 'WEEKLY', 'MONTHLY')
+    ),
+    run_status VARCHAR(20) NOT NULL CHECK (
+        run_status IN ('READY', 'RUNNING', 'PAUSED', 'FAILED')
+    ),
+    current_batch_id INTEGER NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE operations.ingestion_batches (
+    batch_id SERIAL PRIMARY KEY,
+    simulation_id INTEGER NOT NULL REFERENCES operations.simulation_control(simulation_id),
+    simulation_date DATE NOT NULL,
+    batch_type VARCHAR(20) NOT NULL CHECK (
+        batch_type IN ('BOOTSTRAP', 'INCREMENTAL', 'REPLAY')
+    ),
+    started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    completed_at TIMESTAMPTZ NULL,
+    status VARCHAR(20) NOT NULL CHECK (
+        status IN ('STARTED', 'SUCCEEDED', 'FAILED')
+    ),
+    records_generated INTEGER NOT NULL DEFAULT 0 CHECK (records_generated >= 0),
+    error_message TEXT NULL
+);
+
+ALTER TABLE operations.simulation_control
+    ADD CONSTRAINT fk_simulation_control_current_batch
+    FOREIGN KEY (current_batch_id)
+    REFERENCES operations.ingestion_batches(batch_id);
+
 CREATE TABLE master.business_units (
     business_unit_id SERIAL PRIMARY KEY,
     business_unit_name VARCHAR(120) NOT NULL UNIQUE,
@@ -97,6 +134,12 @@ CREATE TABLE master.employees (
     ),
     start_date DATE NOT NULL,
     end_date DATE NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CHECK (end_date IS NULL OR end_date >= start_date)
 );
 
@@ -120,6 +163,12 @@ CREATE TABLE operations.customer_contracts (
     contract_status VARCHAR(40) NOT NULL CHECK (
         contract_status IN ('DRAFT', 'ACTIVE', 'COMPLETED', 'CANCELLED')
     ),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CHECK (contract_end_date IS NULL OR contract_end_date >= contract_start_date)
 );
 
@@ -140,6 +189,12 @@ CREATE TABLE operations.subscriptions (
     subscription_status VARCHAR(40) NOT NULL CHECK (
         subscription_status IN ('ACTIVE', 'CHURNED', 'PAUSED', 'ENDED')
     ),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CHECK (end_date IS NULL OR end_date >= start_date)
 );
 
@@ -154,7 +209,11 @@ CREATE TABLE operations.subscription_events (
     ),
     arr_delta NUMERIC(14, 2) NOT NULL,
     mrr_delta NUMERIC(14, 2) NOT NULL,
-    event_reason TEXT NULL
+    event_reason TEXT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.projects (
@@ -171,6 +230,12 @@ CREATE TABLE operations.projects (
     currency_code CHAR(3) NOT NULL REFERENCES master.currencies(currency_code),
     business_unit_id INTEGER NULL REFERENCES master.business_units(business_unit_id),
     region_id INTEGER NULL REFERENCES master.regions(region_id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CHECK (end_date IS NULL OR end_date >= start_date)
 );
 
@@ -183,7 +248,13 @@ CREATE TABLE operations.project_milestones (
     milestone_amount NUMERIC(14, 2) NOT NULL CHECK (milestone_amount >= 0),
     milestone_status VARCHAR(40) NOT NULL CHECK (
         milestone_status IN ('PLANNED', 'COMPLETED', 'DELAYED', 'CANCELLED')
-    )
+    ),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE operations.time_entries (
@@ -194,7 +265,11 @@ CREATE TABLE operations.time_entries (
     hours NUMERIC(8, 2) NOT NULL CHECK (hours >= 0),
     billable_flag BOOLEAN NOT NULL DEFAULT FALSE,
     hourly_cost_rate NUMERIC(10, 2) NOT NULL CHECK (hourly_cost_rate >= 0),
-    hourly_bill_rate NUMERIC(10, 2) NULL CHECK (hourly_bill_rate IS NULL OR hourly_bill_rate >= 0)
+    hourly_bill_rate NUMERIC(10, 2) NULL CHECK (hourly_bill_rate IS NULL OR hourly_bill_rate >= 0),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.customer_invoices (
@@ -207,7 +282,13 @@ CREATE TABLE operations.customer_invoices (
     invoice_status VARCHAR(40) NOT NULL CHECK (
         invoice_status IN ('DRAFT', 'ISSUED', 'PAID', 'VOID')
     ),
-    invoice_total NUMERIC(14, 2) NOT NULL CHECK (invoice_total >= 0)
+    invoice_total NUMERIC(14, 2) NOT NULL CHECK (invoice_total >= 0),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE operations.customer_invoice_lines (
@@ -220,6 +301,10 @@ CREATE TABLE operations.customer_invoice_lines (
     currency_code CHAR(3) NOT NULL REFERENCES master.currencies(currency_code),
     description TEXT NULL,
     gl_account_id INTEGER NULL REFERENCES master.gl_accounts(gl_account_id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
     CONSTRAINT chk_customer_invoice_lines_source
         CHECK (
             (source_type = 'SUBSCRIPTION' AND subscription_id IS NOT NULL AND project_id IS NULL)
@@ -238,7 +323,13 @@ CREATE TABLE operations.purchases (
     ),
     business_unit_id INTEGER NULL REFERENCES master.business_units(business_unit_id),
     region_id INTEGER NULL REFERENCES master.regions(region_id),
-    cost_centre_id INTEGER NULL REFERENCES master.cost_centres(cost_centre_id)
+    cost_centre_id INTEGER NULL REFERENCES master.cost_centres(cost_centre_id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE operations.purchase_lines (
@@ -250,7 +341,11 @@ CREATE TABLE operations.purchase_lines (
     unit_price NUMERIC(14, 2) NOT NULL CHECK (unit_price >= 0),
     line_amount NUMERIC(14, 2) NOT NULL CHECK (line_amount >= 0),
     currency_code CHAR(3) NOT NULL REFERENCES master.currencies(currency_code),
-    gl_account_id INTEGER NULL REFERENCES master.gl_accounts(gl_account_id)
+    gl_account_id INTEGER NULL REFERENCES master.gl_accounts(gl_account_id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.supplier_invoices (
@@ -263,7 +358,13 @@ CREATE TABLE operations.supplier_invoices (
     invoice_total NUMERIC(14, 2) NOT NULL CHECK (invoice_total >= 0),
     invoice_status VARCHAR(40) NOT NULL CHECK (
         invoice_status IN ('DRAFT', 'RECEIVED', 'APPROVED', 'PAID', 'VOID')
-    )
+    ),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
+    record_version INTEGER NOT NULL DEFAULT 1 CHECK (record_version >= 1),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE operations.supplier_invoice_lines (
@@ -273,7 +374,11 @@ CREATE TABLE operations.supplier_invoice_lines (
     gl_account_id INTEGER NOT NULL REFERENCES master.gl_accounts(gl_account_id),
     line_amount NUMERIC(14, 2) NOT NULL CHECK (line_amount >= 0),
     currency_code CHAR(3) NOT NULL REFERENCES master.currencies(currency_code),
-    description TEXT NULL
+    description TEXT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.payroll (
@@ -288,7 +393,11 @@ CREATE TABLE operations.payroll (
     benefits_amount NUMERIC(14, 2) NOT NULL DEFAULT 0 CHECK (benefits_amount >= 0),
     total_payroll_cost NUMERIC(14, 2) NOT NULL CHECK (total_payroll_cost >= 0),
     currency_code CHAR(3) NOT NULL REFERENCES master.currencies(currency_code),
-    gl_account_id INTEGER NOT NULL REFERENCES master.gl_accounts(gl_account_id)
+    gl_account_id INTEGER NOT NULL REFERENCES master.gl_accounts(gl_account_id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.headcount_events (
@@ -301,7 +410,11 @@ CREATE TABLE operations.headcount_events (
     cost_centre_id INTEGER NULL REFERENCES master.cost_centres(cost_centre_id),
     business_unit_id INTEGER NULL REFERENCES master.business_units(business_unit_id),
     region_id INTEGER NULL REFERENCES master.regions(region_id),
-    fte_change NUMERIC(6, 2) NOT NULL
+    fte_change NUMERIC(6, 2) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.business_events (
@@ -316,7 +429,11 @@ CREATE TABLE operations.business_events (
     employee_id INTEGER NULL REFERENCES master.employees(employee_id),
     project_id INTEGER NULL REFERENCES operations.projects(project_id),
     subscription_id INTEGER NULL REFERENCES operations.subscriptions(subscription_id),
-    severity VARCHAR(20) NOT NULL CHECK (severity IN ('LOW', 'MEDIUM', 'HIGH'))
+    severity VARCHAR(20) NOT NULL CHECK (severity IN ('LOW', 'MEDIUM', 'HIGH')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE operations.fx_rates (
@@ -343,6 +460,10 @@ CREATE TABLE finance.revenue_schedules (
     recognition_status VARCHAR(40) NOT NULL CHECK (
         recognition_status IN ('SCHEDULED', 'RECOGNISED', 'DEFERRED', 'REVERSED')
     ),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
     CONSTRAINT chk_revenue_schedules_source
         CHECK (
             (revenue_source_type = 'SUBSCRIPTION' AND subscription_id IS NOT NULL AND project_id IS NULL)
@@ -360,7 +481,11 @@ CREATE TABLE finance.journal_headers (
     source_id INTEGER NOT NULL,
     description TEXT NULL,
     currency_code CHAR(3) NULL REFERENCES master.currencies(currency_code),
-    posted_flag BOOLEAN NOT NULL DEFAULT FALSE
+    posted_flag BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id)
 );
 
 CREATE TABLE finance.journal_lines (
@@ -380,6 +505,9 @@ CREATE TABLE finance.journal_lines (
     employee_id INTEGER NULL REFERENCES master.employees(employee_id),
     project_id INTEGER NULL REFERENCES operations.projects(project_id),
     subscription_id INTEGER NULL REFERENCES operations.subscriptions(subscription_id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    source_system VARCHAR(80) NOT NULL DEFAULT 'synthetic_generator',
+    ingestion_batch_id INTEGER NULL REFERENCES operations.ingestion_batches(batch_id),
     CHECK (debit_amount > 0 OR credit_amount > 0),
     CHECK (NOT (debit_amount > 0 AND credit_amount > 0))
 );
@@ -478,8 +606,10 @@ CREATE INDEX idx_operations_subscription_events_subscription ON operations.subsc
 CREATE INDEX idx_operations_projects_customer ON operations.projects(customer_id);
 CREATE INDEX idx_operations_customer_invoice_lines_source ON operations.customer_invoice_lines(source_type);
 CREATE INDEX idx_operations_supplier_invoices_supplier ON operations.supplier_invoices(supplier_id);
+CREATE INDEX idx_operations_ingestion_batches_simulation ON operations.ingestion_batches(simulation_id, simulation_date);
 CREATE INDEX idx_finance_revenue_schedules_period ON finance.revenue_schedules(recognition_period);
 CREATE INDEX idx_finance_journal_headers_source ON finance.journal_headers(source_type, source_id);
 CREATE INDEX idx_finance_journal_lines_period ON finance.journal_lines(period);
+CREATE INDEX idx_finance_journal_lines_batch ON finance.journal_lines(ingestion_batch_id);
 CREATE INDEX idx_planning_budgets_period_account ON planning.budgets(period, gl_account_id);
 CREATE INDEX idx_planning_forecasts_period_account ON planning.forecasts(period, gl_account_id);
