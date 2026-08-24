@@ -1,0 +1,122 @@
+# Development Workflow
+
+This document defines a lightweight human-supervised Maker-Reviewer workflow for using Codex and Claude Code on this repository.
+
+This is a development governance workflow only. It is not the application's runtime agent architecture.
+
+## Workflow
+
+```text
+Specification
+-> Maker implementation
+-> Independent Reviewer
+-> Review findings
+-> Maker fixes
+-> Reviewer re-check
+-> Automated validation
+-> Human approval
+-> Accept / merge
+```
+
+## Roles
+
+### Maker
+
+The Maker owns implementation.
+
+Responsibilities:
+
+- Implement the assigned task.
+- Follow the authoritative repository documentation.
+- Keep scope narrow.
+- Explain important implementation decisions.
+- Add or run appropriate validation.
+- Review the diff before completion or commit.
+- Respond to review findings.
+
+### Reviewer
+
+The Reviewer is an independent checker.
+
+Responsibilities:
+
+- Default to read-only on the first review pass.
+- Review the actual diff and the relevant specification.
+- Check correctness, architecture, tests, production failure modes, security/data integrity where relevant, and scope compliance.
+- Look for edge cases and failure modes, not only style.
+- Avoid approving based only on code appearance.
+- Do not silently rewrite the Maker's implementation.
+
+Findings should be classified as:
+
+- `BLOCKER`: must fix before acceptance.
+- `MAJOR`: likely correctness, safety, integrity, or maintainability issue.
+- `MINOR`: small issue with limited risk.
+- `SUGGESTION`: optional improvement.
+
+### Human Approver
+
+The Human Approver controls final acceptance.
+
+Responsibilities:
+
+- Decide whether findings are acceptable.
+- Control final acceptance or merge.
+- Reject either agent's conclusion when needed.
+- Resolve tradeoffs between scope, risk, timing, and learning goals.
+
+### Automated Validation
+
+Tests and validation are independent gates.
+
+Agreement between two AI agents is not proof of correctness. Passing tests are also not complete proof, but they provide a separate evidence source and should be used whenever relevant.
+
+## Role Rotation
+
+Codex and Claude Code are not permanently assigned to one role.
+
+Initial convention for the next module:
+
+- M1.3 Simulation Framework: Codex = `MAKER`
+- M1.3 Simulation Framework: Claude Code = `REVIEWER`
+
+Roles may rotate at clean module boundaries.
+
+Guidelines:
+
+- Keep one Maker through a tightly coupled implementation unit.
+- Rotate roles when moving to a sufficiently independent module or domain.
+- Use the non-authoring agent for independent review when practical.
+- Do not create a complicated automatic rotation system.
+
+## Runtime Boundary
+
+This Maker-Reviewer workflow is for development governance.
+
+It is not evidence that the Decision Intelligence runtime should use a multi-agent architecture. Runtime architecture remains single-agent-first unless later evidence justifies extra complexity.
+
+Multi-agent runtime should only be introduced if supported by evidence such as:
+
+- Excessive tool or context complexity.
+- Clearly separable specialist responsibilities.
+- Different security or policy boundaries.
+- Evaluation results showing specialist routing is beneficial.
+
+Avoid premature multi-agent orchestration.
+
+## Worktree And Concurrency
+
+- Do not allow two Maker agents to edit the same working tree concurrently.
+- Maker-Reviewer does not require parallel editing.
+- Reviewer can inspect a completed Maker diff or commit before fixes are made.
+- If parallel implementation experiments are ever required, use separate Git branches or worktrees.
+- Do not create branches or worktrees solely to perform ordinary review.
+
+## Context Discipline
+
+Keep short instruction files concise:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+
+Detailed workflow rationale belongs here. Do not duplicate large architecture sections into instruction files.
