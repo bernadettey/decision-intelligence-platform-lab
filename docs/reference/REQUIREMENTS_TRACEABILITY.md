@@ -59,7 +59,7 @@ The user-facing business question.
 
 Examples:
 
-- Why did gross margin miss forecast in APAC this month?
+- Why did recognised revenue miss forecast in APAC this month?
 - Why did operating profit miss budget for Enterprise Software?
 - Which customer or product segment drove the revenue shortfall?
 - Did supplier price increases or FX movements explain the COGS variance?
@@ -96,7 +96,17 @@ The metric or outcome being investigated.
 
 Examples:
 
-- Revenue.
+- ARR.
+- MRR.
+- New ARR.
+- Expansion ARR.
+- Contraction ARR.
+- Churned ARR.
+- NRR.
+- GRR.
+- Billings.
+- Deferred revenue.
+- Recognised revenue.
 - Gross margin.
 - COGS.
 - OPEX.
@@ -187,16 +197,83 @@ Representative mapping:
 | Requirement Area | Tables |
 | --- | --- |
 | Enterprise hierarchy | `master.business_units`, `master.cost_centres`, `master.regions`, `master.employees` |
-| Customer revenue | `master.customers`, `master.products`, `operations.orders`, `operations.order_lines`, `operations.invoices`, `operations.payments` |
-| Supplier cost | `master.suppliers`, `operations.purchases`, `operations.supplier_invoices`, `finance.journal_entries`, `finance.actuals` |
-| People and OPEX | `master.employees`, `operations.headcount_events`, `finance.journal_entries`, `finance.monthly_financials` |
-| CAPEX and assets | `finance.capex_projects`, `finance.fixed_assets`, `finance.depreciation`, `finance.journal_entries` |
-| FX | operational transaction tables, `finance.journal_entries`, `finance.actuals`, `finance.monthly_financials` |
-| Planning | `planning.budgets`, `planning.forecasts`, `planning.forecast_versions`, `planning.assumptions` |
+| SaaS commercial and ARR | `master.customers`, `master.products`, `commercial.customer_contracts`, `commercial.subscriptions`, `commercial.subscription_events` |
+| Customer billing and revenue recognition | `billing.customer_invoices`, `billing.customer_invoice_lines`, `billing.customer_payments`, `finance.revenue_schedules`, `finance.journal_headers`, `finance.journal_lines` |
+| Professional Services | `services.projects`, `services.project_milestones`, `services.time_entries`, `billing.customer_invoices`, `finance.revenue_schedules`, `finance.journal_lines` |
+| Supplier cost | `master.suppliers`, `procurement.purchases`, `procurement.purchase_lines`, `procurement.supplier_invoices`, `procurement.supplier_invoice_lines`, `finance.journal_lines` |
+| People and OPEX | `master.employees`, `people.headcount_events`, `people.payroll`, `finance.journal_lines`, `finance.monthly_financials` |
+| CAPEX and assets | `finance.capex_projects`, `finance.fixed_assets`, `finance.depreciation`, `finance.journal_headers`, `finance.journal_lines` |
+| FX | `reference.fx_rates`, operational transaction tables, `finance.journal_headers`, `finance.journal_lines`, `finance.actuals`, `finance.monthly_financials` |
+| Planning | `planning.budgets`, `planning.forecasts`, `planning.forecast_versions`, `planning.headcount_plan` |
 | Security and audit | `security.users`, `security.roles`, `security.user_roles`, `security.data_access`, `security.audit_log` |
 | Evaluation | `evaluation.scenarios`, `evaluation.scenario_ground_truth`, `evaluation.investigation_questions`, `evaluation.expected_answers`, `evaluation.agent_runs`, `evaluation.agent_feedback`, `evaluation.evaluation_results` |
 
 Actual financial outcomes should ultimately be traceable from operational transactions through accounting/GL records into FP&A metrics. Requirements should therefore identify both operational evidence and finance/accounting tables where relevant.
+
+Revenue requirements must distinguish operational SaaS metrics from recognised accounting revenue:
+
+```text
+Bookings != ARR / MRR != Billings != Recognised Revenue != Deferred Revenue != Cash
+```
+
+## Target Table Inventory
+
+This inventory is documentation only, not SQL implementation.
+
+| Area | Table | Status |
+| --- | --- | --- |
+| MASTER | `business_units` | CORE |
+| MASTER | `regions` | CORE |
+| MASTER | `departments` | CORE |
+| MASTER | `cost_centres` | CORE |
+| MASTER | `customers` | CORE |
+| MASTER | `products` | CORE |
+| MASTER | `suppliers` | CORE |
+| MASTER | `employees` | CORE |
+| MASTER | `gl_accounts` | CORE |
+| MASTER | `currencies` | CORE |
+| COMMERCIAL / SAAS | `leads` | SUPPORT |
+| COMMERCIAL / SAAS | `opportunities` | SUPPORT |
+| COMMERCIAL / SAAS | `customer_contracts` | CORE |
+| COMMERCIAL / SAAS | `subscriptions` | CORE |
+| COMMERCIAL / SAAS | `subscription_events` | CORE |
+| PROFESSIONAL SERVICES | `projects` | CORE |
+| PROFESSIONAL SERVICES | `project_milestones` | CORE |
+| PROFESSIONAL SERVICES | `time_entries` | CORE |
+| CUSTOMER BILLING | `customer_invoices` | CORE |
+| CUSTOMER BILLING | `customer_invoice_lines` | CORE |
+| CUSTOMER BILLING | `customer_payments` | SUPPORT |
+| PROCUREMENT | `purchases` | CORE |
+| PROCUREMENT | `purchase_lines` | CORE |
+| PROCUREMENT | `supplier_invoices` | CORE |
+| PROCUREMENT | `supplier_invoice_lines` | CORE |
+| PEOPLE | `payroll` | CORE |
+| PEOPLE | `headcount_events` | CORE-LITE / SUPPORT |
+| FINANCE | `revenue_schedules` | CORE |
+| FINANCE | `journal_headers` | CORE |
+| FINANCE | `journal_lines` | CORE |
+| FINANCE | `capex_projects` | SUPPORT |
+| FINANCE | `fixed_assets` | SUPPORT |
+| PLANNING | `budgets` | CORE |
+| PLANNING | `forecasts` | CORE |
+| PLANNING | `forecast_versions` | CORE |
+| PLANNING | `headcount_plan` | CORE |
+| REFERENCE / OPERATIONS | `business_events` | CORE |
+| REFERENCE / OPERATIONS | `fx_rates` | CORE |
+| EVALUATION | `scenarios` | CORE |
+| EVALUATION | `scenario_ground_truth` | CORE |
+| EVALUATION | `investigation_questions` | CORE |
+| EVALUATION | `expected_answers` | CORE |
+| EVALUATION | `agent_runs` | M2+ |
+| EVALUATION | `agent_feedback` | M2+ |
+| EVALUATION | `evaluation_results` | M7 |
+| SECURITY | `users` | M6 |
+| SECURITY | `roles` | M6 |
+| SECURITY | `user_roles` | M6 |
+| SECURITY | `data_access` | M6 |
+| SECURITY | `audit_log` | M6 |
+| FUTURE | `ai_usage` | FUTURE |
+| FUTURE | AI economics / ROI / marginal resource allocation | FUTURE |
 
 ### Authorization Requirement
 
@@ -337,6 +414,64 @@ Feedback should support:
 - Overbroad answer.
 - Human reviewer comments.
 - Evaluation score.
+
+## Core Management Question Catalog
+
+These questions are requirements inputs for future table and attribute design. They do not require implementation in this documentation task.
+
+### Existing Core Questions
+
+| ID | Management Question | Notes |
+| --- | --- | --- |
+| MQ-001 | Why did recognised revenue miss forecast? | Use recognised accounting revenue, not bookings or cash. |
+| MQ-002 | Why did operating profit miss budget? | P&L variance investigation. |
+| MQ-003 | Why did gross margin miss forecast? | May involve revenue mix, COGS, supplier cost, or FX. |
+| MQ-004 | Which customer or product segment drove the revenue shortfall? | Distinguish SaaS ARR/billings from recognised revenue. |
+| MQ-005 | Did supplier price increases explain the COGS variance? | Supplier-cost driver investigation. |
+| MQ-006 | Did supplier volume or mix explain the COGS variance? | Procurement volume/mix investigation. |
+| MQ-007 | Did FX movements materially affect margin? | Currency-sensitive revenue or supplier cost. |
+| MQ-008 | Did cloud or infrastructure cost drive margin pressure? | Vendor/cloud cost investigation. |
+| MQ-009 | Did contractor or vendor cost drive OPEX variance? | Procurement and people-adjacent OPEX. |
+| MQ-010 | Did payroll variance drive OPEX variance? | People cost and payroll. |
+| MQ-011 | Did headcount exceed plan? | Headcount vs planning. |
+| MQ-012 | Did hiring delays create a vacancy benefit? | Lower OPEX may create future capacity risk. |
+| MQ-013 | Did salary inflation affect EBITDA? | People-cost driver. |
+| MQ-014 | Which business unit drove the forecast miss? | Conformed business-unit dimension. |
+| MQ-015 | Which region drove the forecast miss? | Region dimension independent from BU/cost centre. |
+| MQ-016 | Which cost centre drove OPEX variance? | Cost-centre dimension may be shared or nullable to BU. |
+| MQ-017 | Did product mix deterioration affect margin? | Product and revenue/COGS mix. |
+| MQ-018 | Did discounting affect revenue or margin? | Commercial pricing driver. |
+| MQ-019 | Did customer churn affect ARR or recognised revenue? | Distinguish operational subscription metric from accounting revenue. |
+| MQ-020 | Did a customer contract delay affect bookings, billings, or revenue? | Timing classification. |
+| MQ-021 | Did CAPEX project timing affect cash flow or depreciation? | CAPEX/assets support, not full ERP. |
+| MQ-022 | Did CAPEX overspend affect forecasted cash flow? | CAPEX investigation. |
+| MQ-023 | How much revenue remains deferred? | Revenue recognition and balance-sheet timing. |
+| MQ-024 | Did forecast assumptions explain the variance? | Planning assumption check. |
+| MQ-025 | Which scenario best explains the observed KPI variance? | Evaluation/scenario linkage. |
+
+### SaaS Core Extension
+
+| ID | Management Question | Requirements Purpose |
+| --- | --- | --- |
+| MQ-S-001 | Why did recognised revenue miss forecast? | Ensures revenue schedules and GL linkage exist. |
+| MQ-S-002 | Why did ARR grow while recognised revenue lagged? | Distinguishes subscription movement from accounting recognition. |
+| MQ-S-003 | Why did billings exceed forecast but recognised revenue did not? | Distinguishes invoice/cash timing from revenue recognition. |
+| MQ-S-004 | Which subscription events drove ARR movement? | Requires `NEW`, `RENEWAL`, `EXPANSION`, `CONTRACTION`, `CHURN`. |
+| MQ-S-005 | Which customers drove churned ARR? | Requires customer/subscription event linkage. |
+| MQ-S-006 | How much revenue remains deferred? | Requires billings, revenue schedules, and recognised revenue. |
+| MQ-S-007 | Did revenue-recognition timing materially affect EBITDA? | Connects recognition timing to P&L impact. |
+
+### Professional Services Core / Support Extension
+
+| ID | Management Question | Requirements Purpose |
+| --- | --- | --- |
+| MQ-PS-001 | Why did Professional Services revenue miss forecast? | Keeps service revenue distinct from SaaS subscription revenue. |
+| MQ-PS-002 | Was the miss driven by milestone timing, utilisation, or billable hours? | Requires project milestones and time entries. |
+| MQ-PS-003 | Which projects drove margin deterioration? | Requires delivery cost and project revenue. |
+| MQ-PS-004 | Are delivery costs above plan? | Requires project/cost planning and actuals. |
+| MQ-PS-005 | Did project or milestone delays affect recognised revenue? | Connects delivery progress to revenue recognition. |
+
+Do not build a full Professional Services Automation model. The purpose is only to support project revenue, utilisation, billable hours, delivery cost, project margin, and milestones.
 
 ## FX Requirement
 

@@ -41,9 +41,16 @@ Base scenario types should include:
 - `supplier_price_increase`
 - `customer_contract_delay`
 - `customer_churn`
+- `subscription_expansion`
+- `subscription_contraction`
+- `subscription_renewal_timing`
 - `sales_volume_decline`
 - `discounting_campaign`
 - `product_mix_deterioration`
+- `revenue_recognition_timing`
+- `deferred_revenue_build`
+- `professional_services_milestone_delay`
+- `professional_services_utilisation_decline`
 - `hiring_delay`
 - `headcount_overspend`
 - `contractor_cost_increase`

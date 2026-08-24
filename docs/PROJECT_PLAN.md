@@ -23,7 +23,7 @@ Read reference documents only when they are relevant to the current issue.
 
 | Milestone | Theme | Platform Capability |
 | --- | --- | --- |
-| M1 | Enterprise Data Foundation + Backend | Management-question requirements, enterprise data model, scenario design, SQL schema, synthetic data, PostgreSQL layer, and backend boundary. |
+| M1 | Enterprise Data Foundation + Backend | Management-question requirements, enterprise data model, revenue recognition design, scenario design, SQL schema, synthetic data, PostgreSQL layer, and backend boundary. |
 | M2 | Agentic Investigation | Tool-using root-cause investigation over approved evidence. |
 | M3 | Data Engineering | Repeatable pipelines from operational events to analytical data products. |
 | M4 | Applied Machine Learning | Forecasting, anomaly detection, and risk scoring over scenario-linked outcomes. |
@@ -45,11 +45,11 @@ M1 is **Enterprise Data Foundation + Backend**.
 
 | Step | Name | Output |
 | --- | --- | --- |
-| M1.1A | Management Questions & Requirements Traceability | Canonical management-question requirements and answerability expectations. |
-| M1.1B | Minimum Viable Enterprise Data Model | Smallest enterprise model that supports FP&A investigation without blocking later milestones. |
+| M1.1A | Management Questions & Requirements Traceability | Canonical management-question requirements, including SaaS revenue recognition and Professional Services questions. |
+| M1.1B | Minimum Viable Enterprise Data Model | Smallest B2B SaaS + Professional Services model that supports FP&A investigation without blocking later milestones. |
 | M1.1C | Grain / Attributes / PK / FK / Relationships | Clear table grain, fields, primary keys, foreign keys, and organizational relationships. |
 | M1.1D | Scenario & Ground Truth Design | Evaluator-only ground truth and agent-visible evidence model. |
-| M1.2 | SQL Schema | PostgreSQL schema aligned to the M1 model. |
+| M1.2 | SQL Schema | PostgreSQL schema aligned to the M1 model, including simplified core revenue-recognition structures. |
 | M1.3 | Synthetic Data Generator | Driver-based synthetic data generation. |
 | M1.4 | PostgreSQL Data Layer | Local data access path for the backend. |
 | M1.5 | Backend Foundation | FastAPI boundary and tests for current M1 capability. |

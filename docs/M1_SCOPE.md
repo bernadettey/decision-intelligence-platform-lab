@@ -6,6 +6,8 @@ M1 is **Enterprise Data Foundation + Backend**.
 
 M1 establishes the data architecture required by later milestones while preserving a clean, runnable backend boundary. It is not a standalone demo and not a one-off FP&A commentary tool.
 
+The synthetic company is **B2B SaaS + Professional Services**. M1 must keep recurring SaaS and Professional Services as distinct revenue motions while allowing them to share customer, commercial, planning, and accounting dimensions.
+
 ## M1 Workstreams
 
 ### M1.1 Enterprise Data Model
@@ -19,7 +21,9 @@ Define a realistic B2B technology enterprise model across:
 - `security`
 - `evaluation`
 
-The model must include customers, suppliers, people/OPEX, CAPEX/assets, FX, and accounting/GL flows. Financial outcomes should ultimately be traceable from operational transactions through GL/accounting into FP&A metrics.
+The model must include customers, suppliers, people/OPEX, CAPEX/assets, FX, revenue recognition, and accounting/GL flows. Financial outcomes should ultimately be traceable from operational transactions through GL/accounting into FP&A metrics.
+
+Revenue Recognition is a core M1 finance capability. M1 should support a simplified and explainable model that distinguishes bookings, ARR/MRR, billings, recognised revenue, deferred revenue, and cash.
 
 ### M1.2 Scenario & Ground Truth Design
 
@@ -79,7 +83,9 @@ M1 documentation should make these things clear:
 
 - The platform is one progressive system from M1 through M7.
 - M1 is the enterprise data foundation plus backend boundary.
+- The company model is B2B SaaS + Professional Services with distinct operational revenue flows.
 - The logical schemas are `master`, `operations`, `finance`, `planning`, `security`, and `evaluation`.
+- Revenue Recognition is core to M1 and connects commercial operations to Accounting / GL and FP&A.
 - Employee identity and organizational relationships support future RLS/governance.
 - Financial outcomes can eventually be traced from operational transactions through GL/accounting into FP&A metrics.
 - Evaluation ground truth is separate from agent-visible evidence.
