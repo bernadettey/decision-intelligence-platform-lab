@@ -124,6 +124,7 @@ read current_simulation_date
 - `completed_at`
 - `status`
 - `records_generated`
+- `generator_version`
 - `error_message`
 
 Supported batch types:
@@ -133,6 +134,8 @@ Supported batch types:
 - `REPLAY`
 
 Tables with `ingestion_batch_id` use a foreign key to `operations.ingestion_batches(batch_id)` where this does not create avoidable bootstrap dependency problems.
+
+`generator_version` identifies the version of generator logic that produced the batch. V1.1 stores it as required batch lineage with a transitional default for manual bootstrap data, so future runs can be reproduced and debugged using `simulation_date`, `random_seed`, and `generator_version`.
 
 ### Audit Timestamps
 
@@ -209,6 +212,7 @@ Watermark state, MERGE/upsert logic, and transformation-layer replay handling be
 - Deterministic business keys or stable primary keys should prevent duplicate synthetic records.
 - `batch_id` identifies the generation run that produced source rows.
 - `random_seed` makes synthetic generation reproducible.
+- `generator_version` identifies which generator logic produced a batch.
 - `REPLAY` batches must be distinguishable from normal `INCREMENTAL` batches.
 - Future ingestion should be rerunnable without duplicating downstream facts.
 - MERGE/upsert behavior belongs to later ingestion/transformation layers, not this source PostgreSQL implementation.

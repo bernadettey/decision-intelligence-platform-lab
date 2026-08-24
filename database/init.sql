@@ -33,6 +33,7 @@ CREATE TABLE operations.ingestion_batches (
         status IN ('STARTED', 'SUCCEEDED', 'FAILED')
     ),
     records_generated INTEGER NOT NULL DEFAULT 0 CHECK (records_generated >= 0),
+    generator_version VARCHAR(80) NOT NULL DEFAULT 'manual-bootstrap',
     error_message TEXT NULL
 );
 

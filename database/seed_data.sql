@@ -17,9 +17,10 @@ INSERT INTO operations.ingestion_batches (
     started_at,
     completed_at,
     status,
-    records_generated
+    records_generated,
+    generator_version
 ) VALUES
-    (1, 1, '2024-02-29', 'BOOTSTRAP', NOW(), NOW(), 'SUCCEEDED', 75);
+    (1, 1, '2024-02-29', 'BOOTSTRAP', NOW(), NOW(), 'SUCCEEDED', 75, 'manual-bootstrap');
 
 UPDATE operations.simulation_control
 SET current_batch_id = 1,
