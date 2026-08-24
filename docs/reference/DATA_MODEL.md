@@ -112,6 +112,11 @@ read current_simulation_date
 -> advance simulation state
 ```
 
+M1.3 Phase 1 intentionally does not drive `simulation_control.run_status`.
+`operations.ingestion_batches.status` is the authoritative lifecycle state for
+individual generator runs until there is enough generator behavior to justify a
+separate simulation-level state machine.
+
 ### Batch Lineage
 
 `operations.ingestion_batches` identifies each synthetic generation or replay run:

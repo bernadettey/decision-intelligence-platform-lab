@@ -23,7 +23,12 @@ GeneratorStep = Callable[[RunContext], int]
 
 
 class SimulationRunner:
-    """Coordinates batch lifecycle, transaction boundary, and simulation clock updates."""
+    """Coordinates batch lifecycle, transaction boundary, and simulation clock updates.
+
+    Phase 1 treats batch status as the authoritative lifecycle state. The
+    broader simulation_control.run_status field is intentionally deferred until
+    there is enough generator behavior to justify another state machine.
+    """
 
     def __init__(
         self,
@@ -73,18 +78,20 @@ class SimulationRunner:
         try:
             self.transaction_manager.begin()
             records_generated = self.generator_step(context_with_batch)
+            self.batch_repository.mark_batch_succeeded(batch_id, records_generated)
+            if context.mode in (RunMode.BOOTSTRAP, RunMode.INCREMENTAL):
+                self.clock_repository.advance_clock(
+                    context.simulation_id,
+                    context.simulation_date,
+                    batch_id,
+                )
             self.transaction_manager.commit()
         except Exception as exc:
             self.transaction_manager.rollback()
-            self.batch_repository.mark_batch_failed(batch_id, str(exc))
-            raise
-
-        self.batch_repository.mark_batch_succeeded(batch_id, records_generated)
-        if context.mode in (RunMode.BOOTSTRAP, RunMode.INCREMENTAL):
-            self.clock_repository.advance_clock(
-                context.simulation_id,
-                context.simulation_date,
+            self.batch_repository.mark_batch_failed(
                 batch_id,
+                f"{type(exc).__name__}: {exc}",
             )
+            raise
 
         return batch_id

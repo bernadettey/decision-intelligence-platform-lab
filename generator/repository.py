@@ -75,7 +75,6 @@ class SqlAlchemySimulationRepository:
             ),
             {"batch_id": batch_id, "records_generated": records_generated},
         )
-        self.session.commit()
 
     def mark_batch_failed(self, batch_id: int, error_message: str) -> None:
         self.session.execute(
@@ -110,7 +109,6 @@ class SqlAlchemySimulationRepository:
                 "batch_id": batch_id,
             },
         )
-        self.session.commit()
 
 
 class SqlAlchemyTransactionManager:

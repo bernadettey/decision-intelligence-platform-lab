@@ -19,23 +19,3 @@ class RunContext:
     random_seed: int
     generator_version: str
     batch_id: int | None = None
-
-    @classmethod
-    def create(
-        cls,
-        *,
-        simulation_id: int,
-        mode: str | RunMode,
-        simulation_date: date,
-        random_seed: int,
-        generator_version: str,
-        batch_id: int | None = None,
-    ) -> "RunContext":
-        return cls(
-            simulation_id=simulation_id,
-            mode=RunMode(mode),
-            simulation_date=simulation_date,
-            random_seed=random_seed,
-            generator_version=generator_version,
-            batch_id=batch_id,
-        )
