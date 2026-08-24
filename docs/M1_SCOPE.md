@@ -43,6 +43,8 @@ M1 may define generator requirements and structure. This documentation task does
 
 Define the target PostgreSQL logical schemas and table responsibilities. The data layer should support future data engineering, ML, MLOps, security/RLS, and evaluation without requiring an architectural rewrite.
 
+See [reference/DATA_MODEL.md](reference/DATA_MODEL.md) for the authoritative Logical Data Model v1 before SQL DDL implementation.
+
 ### M1.5 Backend Foundation
 
 Maintain a clean FastAPI backend boundary for current M1 capabilities. The backend should remain runnable and testable while leaving clear extension points for later agent, data, ML, security, and evaluation layers.
@@ -91,4 +93,4 @@ M1 documentation should make these things clear:
 - Evaluation ground truth is separate from agent-visible evidence.
 - AI usage economics is a later-milestone concern, not M1 implementation.
 
-Detailed requirements traceability lives in [reference/REQUIREMENTS_TRACEABILITY.md](reference/REQUIREMENTS_TRACEABILITY.md). Detailed security and answerability policy lives in [reference/SECURITY_AND_ANSWERABILITY.md](reference/SECURITY_AND_ANSWERABILITY.md). Future AI economics boundaries live in [reference/AI_ECONOMICS_FUTURE.md](reference/AI_ECONOMICS_FUTURE.md).
+Detailed logical data model design lives in [reference/DATA_MODEL.md](reference/DATA_MODEL.md). Detailed requirements traceability lives in [reference/REQUIREMENTS_TRACEABILITY.md](reference/REQUIREMENTS_TRACEABILITY.md). Detailed security and answerability policy lives in [reference/SECURITY_AND_ANSWERABILITY.md](reference/SECURITY_AND_ANSWERABILITY.md). Future AI economics boundaries live in [reference/AI_ECONOMICS_FUTURE.md](reference/AI_ECONOMICS_FUTURE.md).

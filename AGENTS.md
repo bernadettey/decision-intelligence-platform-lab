@@ -30,6 +30,7 @@ Architecture changes:
 - `docs/ARCHITECTURE.md`
 
 Data model / management requirements:
+- `docs/reference/DATA_MODEL.md`
 - `docs/reference/REQUIREMENTS_TRACEABILITY.md`
 
 Synthetic scenarios / ground truth / evaluation:

@@ -201,9 +201,9 @@ Representative mapping:
 | Customer billing and revenue recognition | `billing.customer_invoices`, `billing.customer_invoice_lines`, `billing.customer_payments`, `finance.revenue_schedules`, `finance.journal_headers`, `finance.journal_lines` |
 | Professional Services | `services.projects`, `services.project_milestones`, `services.time_entries`, `billing.customer_invoices`, `finance.revenue_schedules`, `finance.journal_lines` |
 | Supplier cost | `master.suppliers`, `procurement.purchases`, `procurement.purchase_lines`, `procurement.supplier_invoices`, `procurement.supplier_invoice_lines`, `finance.journal_lines` |
-| People and OPEX | `master.employees`, `people.headcount_events`, `people.payroll`, `finance.journal_lines`, `finance.monthly_financials` |
+| People and OPEX | `master.employees`, `people.headcount_events`, `people.payroll`, `finance.journal_lines` |
 | CAPEX and assets | `finance.capex_projects`, `finance.fixed_assets`, `finance.depreciation`, `finance.journal_headers`, `finance.journal_lines` |
-| FX | `reference.fx_rates`, operational transaction tables, `finance.journal_headers`, `finance.journal_lines`, `finance.actuals`, `finance.monthly_financials` |
+| FX | `reference.fx_rates`, operational transaction tables, `finance.journal_headers`, `finance.journal_lines` |
 | Planning | `planning.budgets`, `planning.forecasts`, `planning.forecast_versions`, `planning.headcount_plan` |
 | Security and audit | `security.users`, `security.roles`, `security.user_roles`, `security.data_access`, `security.audit_log` |
 | Evaluation | `evaluation.scenarios`, `evaluation.scenario_ground_truth`, `evaluation.investigation_questions`, `evaluation.expected_answers`, `evaluation.agent_runs`, `evaluation.agent_feedback`, `evaluation.evaluation_results` |
@@ -216,64 +216,9 @@ Revenue requirements must distinguish operational SaaS metrics from recognised a
 Bookings != ARR / MRR != Billings != Recognised Revenue != Deferred Revenue != Cash
 ```
 
-## Target Table Inventory
+## Logical Data Model Reference
 
-This inventory is documentation only, not SQL implementation.
-
-| Area | Table | Status |
-| --- | --- | --- |
-| MASTER | `business_units` | CORE |
-| MASTER | `regions` | CORE |
-| MASTER | `departments` | CORE |
-| MASTER | `cost_centres` | CORE |
-| MASTER | `customers` | CORE |
-| MASTER | `products` | CORE |
-| MASTER | `suppliers` | CORE |
-| MASTER | `employees` | CORE |
-| MASTER | `gl_accounts` | CORE |
-| MASTER | `currencies` | CORE |
-| COMMERCIAL / SAAS | `leads` | SUPPORT |
-| COMMERCIAL / SAAS | `opportunities` | SUPPORT |
-| COMMERCIAL / SAAS | `customer_contracts` | CORE |
-| COMMERCIAL / SAAS | `subscriptions` | CORE |
-| COMMERCIAL / SAAS | `subscription_events` | CORE |
-| PROFESSIONAL SERVICES | `projects` | CORE |
-| PROFESSIONAL SERVICES | `project_milestones` | CORE |
-| PROFESSIONAL SERVICES | `time_entries` | CORE |
-| CUSTOMER BILLING | `customer_invoices` | CORE |
-| CUSTOMER BILLING | `customer_invoice_lines` | CORE |
-| CUSTOMER BILLING | `customer_payments` | SUPPORT |
-| PROCUREMENT | `purchases` | CORE |
-| PROCUREMENT | `purchase_lines` | CORE |
-| PROCUREMENT | `supplier_invoices` | CORE |
-| PROCUREMENT | `supplier_invoice_lines` | CORE |
-| PEOPLE | `payroll` | CORE |
-| PEOPLE | `headcount_events` | CORE-LITE / SUPPORT |
-| FINANCE | `revenue_schedules` | CORE |
-| FINANCE | `journal_headers` | CORE |
-| FINANCE | `journal_lines` | CORE |
-| FINANCE | `capex_projects` | SUPPORT |
-| FINANCE | `fixed_assets` | SUPPORT |
-| PLANNING | `budgets` | CORE |
-| PLANNING | `forecasts` | CORE |
-| PLANNING | `forecast_versions` | CORE |
-| PLANNING | `headcount_plan` | CORE |
-| REFERENCE / OPERATIONS | `business_events` | CORE |
-| REFERENCE / OPERATIONS | `fx_rates` | CORE |
-| EVALUATION | `scenarios` | CORE |
-| EVALUATION | `scenario_ground_truth` | CORE |
-| EVALUATION | `investigation_questions` | CORE |
-| EVALUATION | `expected_answers` | CORE |
-| EVALUATION | `agent_runs` | M2+ |
-| EVALUATION | `agent_feedback` | M2+ |
-| EVALUATION | `evaluation_results` | M7 |
-| SECURITY | `users` | M6 |
-| SECURITY | `roles` | M6 |
-| SECURITY | `user_roles` | M6 |
-| SECURITY | `data_access` | M6 |
-| SECURITY | `audit_log` | M6 |
-| FUTURE | `ai_usage` | FUTURE |
-| FUTURE | AI economics / ROI / marginal resource allocation | FUTURE |
+The authoritative target table inventory, table-level specifications, PK/FK matrix, ERD, and constraint decisions live in [DATA_MODEL.md](DATA_MODEL.md). This requirements document maps management questions to required tables and attributes; it is not the authoritative schema specification.
 
 ### Authorization Requirement
 
@@ -335,9 +280,16 @@ Examples:
 - `supplier_price_increase`
 - `customer_contract_delay`
 - `customer_churn`
+- `subscription_expansion`
+- `subscription_contraction`
+- `subscription_renewal_timing`
 - `sales_volume_decline`
 - `discounting_campaign`
 - `product_mix_deterioration`
+- `revenue_recognition_timing`
+- `deferred_revenue_build`
+- `professional_services_milestone_delay`
+- `professional_services_utilisation_decline`
 - `hiring_delay`
 - `headcount_overspend`
 - `contractor_cost_increase`
@@ -360,7 +312,7 @@ Gross margin missed forecast
     -> compare actual COGS against forecast COGS
     -> inspect supplier invoice prices and purchase quantities
     -> inspect FX-sensitive purchases
-    -> connect supplier price or FX movement to GL/actuals
+    -> connect supplier price or FX movement to GL/journal actuals
     -> explain margin variance against forecast
 ```
 

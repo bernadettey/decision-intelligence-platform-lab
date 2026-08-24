@@ -12,6 +12,7 @@ The first implementation domain is Business Performance / FP&A investigation. FP
 
 - High-level architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
 - M1 boundary: [M1_SCOPE.md](M1_SCOPE.md)
+- Logical data model: [reference/DATA_MODEL.md](reference/DATA_MODEL.md)
 - Requirements traceability: [reference/REQUIREMENTS_TRACEABILITY.md](reference/REQUIREMENTS_TRACEABILITY.md)
 - Scenario and evaluation model: [reference/SCENARIO_MODEL.md](reference/SCENARIO_MODEL.md)
 - Security and answerability: [reference/SECURITY_AND_ANSWERABILITY.md](reference/SECURITY_AND_ANSWERABILITY.md)

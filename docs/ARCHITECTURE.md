@@ -198,7 +198,7 @@ The target PostgreSQL architecture preserves the six conceptual enterprise layer
 
 - `master`: stable enterprise entities and conformed dimensions.
 - `operations`: commercial, SaaS, Professional Services, billing, procurement, people, business-event, and FX operational evidence.
-- `finance`: revenue schedules, journal headers, journal lines, actuals, CAPEX projects, fixed assets, and depreciation.
+- `finance`: revenue schedules, journal headers, journal lines, CAPEX projects, and fixed assets.
 - `planning`: budgets, forecasts, forecast versions, and headcount plan.
 - `security`: users, roles, user-role assignments, data access rules, and audit logs.
 - `evaluation`: scenarios, ground truth, investigation questions, expected answers, agent runs, feedback, and evaluation results.
@@ -209,7 +209,7 @@ Detailed management-question requirements live in [reference/REQUIREMENTS_TRACEA
 
 Detailed scenario and evaluation design lives in [reference/SCENARIO_MODEL.md](reference/SCENARIO_MODEL.md).
 
-Detailed target table inventory lives in [reference/REQUIREMENTS_TRACEABILITY.md](reference/REQUIREMENTS_TRACEABILITY.md).
+Detailed target table inventory, table specifications, relationship matrix, and ERD live in [reference/DATA_MODEL.md](reference/DATA_MODEL.md).
 
 ## Data Model Principles
 
