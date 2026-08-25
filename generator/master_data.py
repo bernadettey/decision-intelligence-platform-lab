@@ -94,7 +94,7 @@ class MasterDataGenerator:
         )
 
     def _business_units(self, context: RunContext) -> list[dict[str, object]]:
-        names = ["Atlas SaaS", "Atlas Professional Services", "Atlas Corporate / Shared"]
+        names = ["SaaS", "Professional Services", "Corporate / Shared"]
         return [
             {
                 "business_unit_id": self._id(context, "business_units", name),
@@ -105,7 +105,7 @@ class MasterDataGenerator:
         ]
 
     def _regions(self, context: RunContext) -> list[dict[str, object]]:
-        names = ["Atlas North America", "Atlas APAC", "Atlas EMEA"]
+        names = ["North America", "APAC", "EMEA"]
         return [
             {"region_id": self._id(context, "regions", name), "region_name": name, "active_flag": True}
             for name in names
@@ -113,16 +113,16 @@ class MasterDataGenerator:
 
     def _departments(self, context: RunContext) -> list[dict[str, object]]:
         names = [
-            "Atlas Sales",
-            "Atlas Marketing",
-            "Atlas Customer Success",
-            "Atlas Product",
-            "Atlas Engineering",
-            "Atlas Professional Services Delivery",
-            "Atlas Finance",
-            "Atlas People",
-            "Atlas Operations",
-            "Atlas Executive",
+            "Sales",
+            "Marketing",
+            "Customer Success",
+            "Product",
+            "Engineering",
+            "Professional Services Delivery",
+            "Finance",
+            "People",
+            "Operations",
+            "Executive",
         ][: self.config.departments]
         return [
             {
@@ -144,30 +144,30 @@ class MasterDataGenerator:
 
     def _gl_accounts(self, context: RunContext) -> list[dict[str, object]]:
         definitions = [
-            ("9000", "Atlas Cash", "CASH", "DEBIT"),
-            ("9010", "Atlas Accounts Receivable", "ASSET", "DEBIT"),
-            ("9020", "Atlas Prepaid Expenses", "ASSET", "DEBIT"),
-            ("9030", "Atlas Fixed Assets", "ASSET", "DEBIT"),
-            ("9100", "Atlas Accounts Payable", "LIABILITY", "CREDIT"),
-            ("9110", "Atlas Deferred Revenue", "DEFERRED_REVENUE", "CREDIT"),
-            ("9120", "Atlas Accrued Payroll", "LIABILITY", "CREDIT"),
-            ("9200", "Atlas Equity", "EQUITY", "CREDIT"),
-            ("9300", "Atlas SaaS Subscription Revenue", "REVENUE", "CREDIT"),
-            ("9310", "Atlas SaaS Add-on Revenue", "REVENUE", "CREDIT"),
-            ("9320", "Atlas Professional Services Revenue", "REVENUE", "CREDIT"),
-            ("9400", "Atlas Cloud Hosting COGS", "COGS", "DEBIT"),
-            ("9410", "Atlas Support COGS", "COGS", "DEBIT"),
-            ("9420", "Atlas Contractor Delivery COGS", "COGS", "DEBIT"),
-            ("9500", "Atlas Sales Payroll", "OPEX", "DEBIT"),
-            ("9510", "Atlas Marketing Expense", "OPEX", "DEBIT"),
-            ("9520", "Atlas Engineering Payroll", "OPEX", "DEBIT"),
-            ("9530", "Atlas Product Payroll", "OPEX", "DEBIT"),
-            ("9540", "Atlas Customer Success Payroll", "OPEX", "DEBIT"),
-            ("9550", "Atlas G&A Payroll", "OPEX", "DEBIT"),
-            ("9560", "Atlas Software Tools", "OPEX", "DEBIT"),
-            ("9570", "Atlas Facilities", "OPEX", "DEBIT"),
-            ("9580", "Atlas Professional Fees", "OPEX", "DEBIT"),
-            ("9590", "Atlas Travel", "OPEX", "DEBIT"),
+            ("1000", "Cash", "CASH", "DEBIT"),
+            ("1100", "Accounts Receivable", "ASSET", "DEBIT"),
+            ("1200", "Prepaid Expenses", "ASSET", "DEBIT"),
+            ("1500", "Fixed Assets", "ASSET", "DEBIT"),
+            ("2000", "Accounts Payable", "LIABILITY", "CREDIT"),
+            ("2100", "Deferred Revenue", "DEFERRED_REVENUE", "CREDIT"),
+            ("2200", "Accrued Payroll", "LIABILITY", "CREDIT"),
+            ("3000", "Equity", "EQUITY", "CREDIT"),
+            ("4000", "SaaS Subscription Revenue", "REVENUE", "CREDIT"),
+            ("4010", "SaaS Add-on Revenue", "REVENUE", "CREDIT"),
+            ("4100", "Professional Services Revenue", "REVENUE", "CREDIT"),
+            ("5000", "Cloud Hosting COGS", "COGS", "DEBIT"),
+            ("5010", "Support COGS", "COGS", "DEBIT"),
+            ("5100", "Contractor Delivery COGS", "COGS", "DEBIT"),
+            ("6000", "Sales Payroll", "OPEX", "DEBIT"),
+            ("6010", "Marketing Expense", "OPEX", "DEBIT"),
+            ("6020", "Engineering Payroll", "OPEX", "DEBIT"),
+            ("6030", "Product Payroll", "OPEX", "DEBIT"),
+            ("6040", "Customer Success Payroll", "OPEX", "DEBIT"),
+            ("6050", "G&A Payroll", "OPEX", "DEBIT"),
+            ("6060", "Software Tools", "OPEX", "DEBIT"),
+            ("6070", "Facilities", "OPEX", "DEBIT"),
+            ("6080", "Professional Fees", "OPEX", "DEBIT"),
+            ("6090", "Travel", "OPEX", "DEBIT"),
         ]
         return [
             {
@@ -188,14 +188,14 @@ class MasterDataGenerator:
     ) -> list[dict[str, object]]:
         bu = {row["business_unit_name"]: row["business_unit_id"] for row in business_units}
         definitions = [
-            ("Atlas Decision Cloud Enterprise", "SAAS_SUBSCRIPTION", "Atlas SaaS"),
-            ("Atlas Decision Cloud Growth", "SAAS_SUBSCRIPTION", "Atlas SaaS"),
-            ("Atlas Decision Cloud Starter", "SAAS_SUBSCRIPTION", "Atlas SaaS"),
-            ("Atlas Advanced Analytics Add-on", "SAAS_ADDON", "Atlas SaaS"),
-            ("Atlas Premium Support Add-on", "SAAS_ADDON", "Atlas SaaS"),
-            ("Atlas Implementation Package", "PROFESSIONAL_SERVICE", "Atlas Professional Services"),
-            ("Atlas Data Migration Package", "PROFESSIONAL_SERVICE", "Atlas Professional Services"),
-            ("Atlas Strategic Advisory Sprint", "PROFESSIONAL_SERVICE", "Atlas Professional Services"),
+            ("Decision Cloud Enterprise", "SAAS_SUBSCRIPTION", "SaaS"),
+            ("Decision Cloud Growth", "SAAS_SUBSCRIPTION", "SaaS"),
+            ("Decision Cloud Starter", "SAAS_SUBSCRIPTION", "SaaS"),
+            ("Advanced Analytics Add-on", "SAAS_ADDON", "SaaS"),
+            ("Premium Support Add-on", "SAAS_ADDON", "SaaS"),
+            ("Implementation Package", "PROFESSIONAL_SERVICE", "Professional Services"),
+            ("Data Migration Package", "PROFESSIONAL_SERVICE", "Professional Services"),
+            ("Strategic Advisory Sprint", "PROFESSIONAL_SERVICE", "Professional Services"),
         ]
         return [
             {
@@ -217,21 +217,21 @@ class MasterDataGenerator:
         bu = {row["business_unit_name"]: row["business_unit_id"] for row in business_units}
         dept = {row["department_name"]: row["department_id"] for row in departments}
         definitions = [
-            ("Atlas SaaS Sales NA", "Atlas SaaS", "Atlas Sales"),
-            ("Atlas SaaS Sales APAC", "Atlas SaaS", "Atlas Sales"),
-            ("Atlas SaaS Sales EMEA", "Atlas SaaS", "Atlas Sales"),
-            ("Atlas SaaS Marketing", "Atlas SaaS", "Atlas Marketing"),
-            ("Atlas Customer Success", "Atlas SaaS", "Atlas Customer Success"),
-            ("Atlas Product Management", "Atlas SaaS", "Atlas Product"),
-            ("Atlas Platform Engineering", "Atlas SaaS", "Atlas Engineering"),
-            ("Atlas Services Delivery NA", "Atlas Professional Services", "Atlas Professional Services Delivery"),
-            ("Atlas Services Delivery APAC", "Atlas Professional Services", "Atlas Professional Services Delivery"),
-            ("Atlas Services Delivery EMEA", "Atlas Professional Services", "Atlas Professional Services Delivery"),
-            ("Atlas Finance Shared Services", None, "Atlas Finance"),
-            ("Atlas People Operations", None, "Atlas People"),
-            ("Atlas Corporate Operations", None, "Atlas Operations"),
-            ("Atlas Executive Office", None, "Atlas Executive"),
-            ("Atlas Shared Technology", None, "Atlas Engineering"),
+            ("SaaS Sales NA", "SaaS", "Sales"),
+            ("SaaS Sales APAC", "SaaS", "Sales"),
+            ("SaaS Sales EMEA", "SaaS", "Sales"),
+            ("SaaS Marketing", "SaaS", "Marketing"),
+            ("Customer Success", "SaaS", "Customer Success"),
+            ("Product Management", "SaaS", "Product"),
+            ("Platform Engineering", "SaaS", "Engineering"),
+            ("Services Delivery NA", "Professional Services", "Professional Services Delivery"),
+            ("Services Delivery APAC", "Professional Services", "Professional Services Delivery"),
+            ("Services Delivery EMEA", "Professional Services", "Professional Services Delivery"),
+            ("Finance Shared Services", None, "Finance"),
+            ("People Operations", None, "People"),
+            ("Corporate Operations", None, "Operations"),
+            ("Executive Office", None, "Executive"),
+            ("Shared Technology", None, "Engineering"),
         ][: self.config.cost_centres]
         return [
             {
@@ -252,7 +252,7 @@ class MasterDataGenerator:
         business_units: list[dict[str, object]],
         regions: list[dict[str, object]],
     ) -> list[dict[str, object]]:
-        bu_id = next(row["business_unit_id"] for row in business_units if row["business_unit_name"] == "Atlas SaaS")
+        bu_id = next(row["business_unit_id"] for row in business_units if row["business_unit_name"] == "SaaS")
         segments = ["Enterprise", "Enterprise", "Mid-Market", "Mid-Market", "Strategic"]
         industries = ["Bank", "Health", "Retail", "Manufacturing", "Energy", "Logistics", "Software"]
         rows = []
@@ -320,8 +320,7 @@ class MasterDataGenerator:
             department_name = dept_by_id[cost_centre["department_id"]]
             region = regions[(index + rng.randrange(len(regions))) % len(regions)]
             business_unit_id = cost_centre["business_unit_id"]
-            normalized_department = department_name.removeprefix("Atlas ")
-            if business_unit_id is None and normalized_department in {"Finance", "People", "Operations", "Executive"}:
+            if business_unit_id is None and department_name in {"Finance", "People", "Operations", "Executive"}:
                 business_unit_id = None
             elif business_unit_id is None:
                 business_unit_id = business_units[2]["business_unit_id"]
@@ -329,7 +328,7 @@ class MasterDataGenerator:
                 {
                     "employee_id": self._id(context, "employees", f"employee-{index:03d}"),
                     "employee_name": f"Employee {index:03d}",
-                    "role_title": self._role_for_department(normalized_department, index),
+                    "role_title": self._role_for_department(department_name, index),
                     "business_unit_id": business_unit_id,
                     "region_id": region["region_id"],
                     "department_id": cost_centre["department_id"],

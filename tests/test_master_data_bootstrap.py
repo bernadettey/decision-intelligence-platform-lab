@@ -1,4 +1,5 @@
 from datetime import date
+from pathlib import Path
 
 import pytest
 from sqlalchemy import text
@@ -73,6 +74,12 @@ def test_generated_organization_relationships_are_coherent() -> None:
         row["cost_centre_id"] in cost_centre_ids and row["manager_employee_id"] in employee_ids
         for row in population.manager_assignments
     )
+
+
+def test_seed_data_does_not_preload_manual_master_population() -> None:
+    seed_sql = Path("database/seed_data.sql").read_text()
+
+    assert "INSERT INTO master." not in seed_sql
 
 
 def assert_postgres_available(session) -> None:

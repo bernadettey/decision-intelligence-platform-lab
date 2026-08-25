@@ -140,7 +140,25 @@ Supported batch types:
 
 Tables with `ingestion_batch_id` use a foreign key to `operations.ingestion_batches(batch_id)` where this does not create avoidable bootstrap dependency problems.
 
-`generator_version` identifies the version of generator logic that produced the batch. V1.1 stores it as required batch lineage with a transitional default for manual bootstrap data, so future runs can be reproduced and debugged using `simulation_date`, `random_seed`, and `generator_version`.
+`generator_version` identifies the version of generator logic that produced the batch, so future runs can be reproduced and debugged using `simulation_date`, `random_seed`, and `generator_version`.
+
+### Development Bootstrap Source Of Truth
+
+For normal dev/CI use, deterministic generator bootstrap is the authoritative source for synthetic enterprise master data.
+
+`database/seed_data.sql` should seed only the minimal simulation control state required to start the generator. It must not preload manual master, operational, finance, planning, or evaluation rows that represent a competing synthetic enterprise.
+
+Fresh environment flow:
+
+```text
+docker compose up
+-> schema initialization
+-> minimal simulation_control seed
+-> M1.3 BOOTSTRAP run
+-> one coherent master-data population
+```
+
+Phase 3 transaction generation must build on this deterministic master-data population, not on a parallel manual seed dataset.
 
 ### Audit Timestamps
 
