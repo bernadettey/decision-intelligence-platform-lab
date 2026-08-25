@@ -66,3 +66,7 @@ REVIEWER:
 - Does not silently rewrite the Maker's implementation.
 - Checks correctness, architecture, tests, production failure modes, security/data integrity where relevant, and scope compliance.
 - Classifies findings as `BLOCKER`, `MAJOR`, `MINOR`, or `SUGGESTION`.
+- Outputs must end with a compact `MAKER HANDOFF`.
+
+MAKER handoff rule:
+- Validate handoff findings against the actual code before implementing fixes.

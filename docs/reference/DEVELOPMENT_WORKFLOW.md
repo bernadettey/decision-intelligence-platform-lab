@@ -9,6 +9,20 @@ This is a development governance workflow only. It is not the application's runt
 ```text
 Specification
 -> Maker implementation
+-> Commit + automated tests
+-> Independent Reviewer full review
+-> Compact MAKER HANDOFF
+-> Maker validates and fixes findings
+-> Fix commit + automated tests
+-> Reviewer delta re-review
+-> Human approval
+```
+
+For simple work where no independent review is requested, the shorter flow is:
+
+```text
+Specification
+-> Maker implementation
 -> Independent Reviewer
 -> Review findings
 -> Maker fixes
@@ -53,6 +67,79 @@ Findings should be classified as:
 - `MAJOR`: likely correctness, safety, integrity, or maintainability issue.
 - `MINOR`: small issue with limited risk.
 - `SUGGESTION`: optional improvement.
+
+## Reviewer-to-Maker Handoff
+
+The Reviewer may perform a detailed internal or full review, but must end with a compact self-contained `MAKER HANDOFF` for the implementing agent.
+
+The handoff should contain only actionable findings needed for the next implementation step. It must be understandable without the full review text.
+
+Use this structure for each included finding:
+
+```text
+Severity:
+Disposition:
+Location:
+Problem:
+Required outcome:
+Validation:
+```
+
+Severity values:
+
+- `BLOCKER`
+- `MAJOR`
+- `MINOR`
+- `SUGGESTION`
+
+Disposition values:
+
+- `FIX NOW`
+- `DEFER`
+
+Handoff rules:
+
+- `BLOCKER` + `FIX NOW` must always be included.
+- `MAJOR` + `FIX NOW` must always be included.
+- `MINOR` should be included only when it should realistically be fixed now.
+- `SUGGESTION` should normally be omitted unless required by another finding.
+- Resolved checks, praise, and general observations should not be repeated.
+- Keep `MAKER HANDOFF` under approximately 500 words where practical.
+
+## Maker Handoff Response
+
+The Maker must not blindly implement Reviewer findings.
+
+For each `FIX NOW` finding, the Maker should:
+
+- Validate the finding against the actual code.
+- State whether the Maker agrees.
+- Fix confirmed `BLOCKER` and `MAJOR` findings.
+- Address included `MINOR` findings when low risk and appropriate.
+- Explain disagreements instead of silently ignoring them.
+- Run relevant automated validation.
+
+## Delta Re-review
+
+After the Maker produces a fix commit, the Reviewer should normally review:
+
+- The original `MAKER HANDOFF`.
+- The fix commit diff.
+- Affected tests.
+
+The Reviewer should not perform a full deep review of unchanged architecture unless:
+
+- The fix changes foundational transaction, security, or schema behavior.
+- A regression is suspected.
+- The Human Approver requests it.
+
+For each previous finding, return one of:
+
+- `RESOLVED`
+- `PARTIALLY RESOLVED`
+- `NOT RESOLVED`
+
+Then provide the final verdict.
 
 ### Human Approver
 
@@ -120,3 +207,7 @@ Keep short instruction files concise:
 - `CLAUDE.md`
 
 Detailed workflow rationale belongs here. Do not duplicate large architecture sections into instruction files.
+
+Do not pass full Reviewer reasoning to the Maker when a compact actionable handoff is sufficient. Permanent architecture knowledge belongs in authoritative repository docs. Temporary review reasoning remains temporary.
+
+Do not create one-off review Markdown files for every review. Only update permanent docs when a review produces a durable architectural or engineering decision.
