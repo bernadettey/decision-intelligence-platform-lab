@@ -36,20 +36,19 @@ class AIService:
     def _generate_mock_commentary(self, question: str, metrics_used: list[str], rows: list[dict]) -> str:
         if not rows:
             return (
-                "No matching financial records were found for the requested period. "
-                "Please confirm the month, business unit, or metric scope."
+                "No matching V1 PostgreSQL records were found. "
+                "Please confirm that the current synthetic data bootstrap has been run."
             )
 
-        worst = rows[0]
-        variance = float(worst["operating_profit_budget_variance"])
-        actual_op = float(worst["actual_operating_profit"])
-        budget_op = float(worst["budget_operating_profit"])
-
-        direction = "below" if variance < 0 else "above"
+        top_arr_row = rows[0]
+        arr = float(top_arr_row["arr_amount"])
+        mrr = float(top_arr_row["mrr_amount"])
+        subscriptions = int(top_arr_row["active_subscriptions"])
+        events = int(top_arr_row["subscription_events"])
         return (
-            f"Operating profit was {direction} budget for {worst['business_unit']} in the requested period. "
-            f"Actual operating profit was {actual_op:,.0f} versus budget of {budget_op:,.0f}, "
-            f"creating a variance of {variance:,.0f}. The primary executive takeaway is that margin delivery "
-            f"should be reviewed by business unit, with attention on revenue conversion, COGS pressure, and opex control. "
-            f"Metrics used: {', '.join(metrics_used)}."
+            f"{top_arr_row['business_unit']} has {subscriptions} active SaaS subscriptions "
+            f"in {top_arr_row['region'] or 'unassigned regions'}, representing ARR of {arr:,.0f} "
+            f"and MRR of {mrr:,.0f}. The current V1 data layer is reporting from "
+            f"schema-qualified SaaS commercial tables, with {events} subscription events "
+            f"available for operational traceability. Metrics used: {', '.join(metrics_used)}."
         )

@@ -32,7 +32,7 @@ def ask(payload: AskRequest, db: Session = Depends(get_db)) -> AskResponse:
     ai_service = AIService()
 
     metrics_used = semantic_service.infer_metrics(payload.question)
-    sql_used, rows = query_service.run_variance_query(db, payload.question)
+    sql_used, rows = query_service.run_saas_commercial_summary(db)
     answer = ai_service.generate_commentary(payload.question, metrics_used, rows)
 
     return AskResponse(
