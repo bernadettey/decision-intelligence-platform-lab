@@ -26,6 +26,12 @@ The first use case is Business Performance / FP&A investigation, but the platfor
 General repository work:
 - `docs/PROJECT_PLAN.md`
 
+Delivery priority:
+- `docs/PROJECT_BACKLOG.md`
+
+Learning context:
+- `docs/LEARNING_BACKLOG.md`
+
 Architecture changes:
 - `docs/ARCHITECTURE.md`
 
@@ -70,3 +76,7 @@ REVIEWER:
 
 MAKER handoff rule:
 - Validate handoff findings against the actual code before implementing fixes.
+
+Backlog rule:
+- Project backlog determines delivery priority.
+- Learning backlog informs teaching and implementation context but does not authorize scope expansion.
