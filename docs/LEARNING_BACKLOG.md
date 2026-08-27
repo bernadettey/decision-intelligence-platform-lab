@@ -34,6 +34,18 @@ Explain why batch lifecycle metadata and generated business writes need differen
 
 ### Concept
 
+SQL grain / join cardinality / join fan-out.
+
+Trigger/context:
+
+M1.4 exposed a 1:N subscription-to-events join that could multiply ARR/MRR during aggregation.
+
+Learning goal:
+
+Understand table grain, 1:1 / 1:N / N:N relationships, aggregation grain, and how to prevent metric duplication.
+
+### Concept
+
 Duplicate protection vs idempotency.
 
 Trigger/context:
@@ -107,6 +119,18 @@ Learning goal:
 Trace operational evidence through accounting actuals into FP&A metrics.
 
 ## Parking Lot
+
+### Concept
+
+Stale MVP ORM model cleanup.
+
+Trigger/context:
+
+`app/models.py` still contains early MVP ORM models that are not aligned to the V1 schema.
+
+Learning goal:
+
+Recognise dead or stale compatibility code and decide when cleanup should be deferred versus included in a scoped change.
 
 ### Concept
 
