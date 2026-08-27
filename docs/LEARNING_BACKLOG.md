@@ -34,6 +34,18 @@ Explain why batch lifecycle metadata and generated business writes need differen
 
 ### Concept
 
+Duplicate protection vs idempotency.
+
+Trigger/context:
+
+Repeated deterministic SaaS bootstrap currently rejects existing deterministic IDs.
+
+Learning goal:
+
+Understand reject-on-duplicate vs idempotent retry/upsert behavior and when each is appropriate.
+
+### Concept
+
 PostgreSQL constraints as safety rails.
 
 Trigger/context:
@@ -57,6 +69,18 @@ Learning goal:
 Understand reproducibility, replay, and idempotency at a practical generator level.
 
 ## Later
+
+### Concept
+
+Dead / unreachable code.
+
+Trigger/context:
+
+Reviewer noted the region_id fallback is unreachable because customer.region_id is NOT NULL.
+
+Learning goal:
+
+Recognise unreachable branches and understand when cleanup is worth doing.
 
 ### Concept
 

@@ -6,16 +6,16 @@ The authoritative roadmap remains [PROJECT_PLAN.md](PROJECT_PLAN.md). This file 
 
 ## Current
 
-### M1.3 Synthetic Data Generator - Phase 3
+### M1.4 PostgreSQL Data Layer
 
 Status: Ready to scope next.
 
-Goal: Generate the first transaction-level synthetic enterprise activity on top of the deterministic master-data bootstrap.
+Goal: Build the local data access path for the backend.
 
 Expected next decision:
 
-- Define the smallest coherent Phase 3 slice before implementation.
-- Preserve distinct SaaS and Professional Services revenue motions.
+- Define the smallest coherent PostgreSQL data-access slice before implementation.
+- Preserve the existing schema and generated source-data architecture.
 - Do not expand into M2 agents, M3 pipelines, ML, cloud, or RLS.
 
 ## Completed
@@ -27,12 +27,11 @@ Expected next decision:
 - M1.2 PostgreSQL Schema V1 and V1.1 metadata foundation.
 - M1.3 Phase 1 Synthetic Simulation Framework.
 - M1.3 Phase 2 Deterministic Master Data Bootstrap.
+- M1.3 Phase 3 SaaS Commercial Operational Flow.
 - Development governance: Maker-Reviewer workflow and compact Reviewer-to-Maker handoff.
 
 ## Next
 
-- M1.3 remaining generator phases after Phase 3 are scoped and reviewed.
-- M1.4 PostgreSQL Data Layer.
 - M1.5 Backend Foundation.
 
 ## Later
