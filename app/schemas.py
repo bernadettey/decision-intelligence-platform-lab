@@ -23,4 +23,4 @@ class AskResponse(BaseModel):
     sql_used: str
     metrics_used: list[str]
     summary_type: str = "executive_commentary"
-    learning_stage: str = "fastapi_mvp"
+    learning_stage: str = "m1_backend"

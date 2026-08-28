@@ -1,5 +1,6 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
@@ -14,9 +15,20 @@ settings = get_settings()
 app = FastAPI(title=settings.app_name)
 
 
+def get_query_service() -> QueryService:
+    return QueryService()
+
+
+def get_ai_service() -> AIService:
+    return AIService()
+
+
 @app.get("/health", response_model=HealthResponse)
 def health(db: Session = Depends(get_db)) -> HealthResponse:
-    db.execute(text("SELECT 1"))
+    try:
+        db.execute(text("SELECT 1"))
+    except OperationalError as exc:
+        raise HTTPException(status_code=503, detail="Database unavailable") from exc
     return HealthResponse(status="ok", service=settings.app_name)
 
 
@@ -26,13 +38,19 @@ def metrics() -> list[MetricDefinition]:
 
 
 @app.post("/ask", response_model=AskResponse)
-def ask(payload: AskRequest, db: Session = Depends(get_db)) -> AskResponse:
+def ask(
+    payload: AskRequest,
+    db: Session = Depends(get_db),
+    query_service: QueryService = Depends(get_query_service),
+    ai_service: AIService = Depends(get_ai_service),
+) -> AskResponse:
     semantic_service = SemanticService()
-    query_service = QueryService()
-    ai_service = AIService()
 
     metrics_used = semantic_service.infer_metrics(payload.question)
-    sql_used, rows = query_service.run_saas_commercial_summary(db)
+    try:
+        sql_used, rows = query_service.run_saas_commercial_summary(db)
+    except OperationalError as exc:
+        raise HTTPException(status_code=503, detail="Database unavailable") from exc
     answer = ai_service.generate_commentary(payload.question, metrics_used, rows)
 
     return AskResponse(

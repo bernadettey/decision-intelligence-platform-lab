@@ -8,4 +8,4 @@ def test_ask_response_includes_current_learning_stage() -> None:
         metrics_used=["operating_profit", "budget_variance"],
     )
 
-    assert response.learning_stage == "fastapi_mvp"
+    assert response.learning_stage == "m1_backend"
