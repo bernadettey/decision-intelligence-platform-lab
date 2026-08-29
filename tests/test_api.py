@@ -19,6 +19,16 @@ def clear_dependency_overrides() -> Generator[None, None, None]:
 
 
 def test_health_success() -> None:
+    session = SessionLocal()
+    try:
+        try:
+            session.execute(text("SELECT 1"))
+            session.rollback()
+        except SQLAlchemyError as exc:
+            pytest.skip(f"PostgreSQL test database is unavailable: {exc}")
+    finally:
+        session.close()
+
     client = TestClient(app)
 
     response = client.get("/health")
