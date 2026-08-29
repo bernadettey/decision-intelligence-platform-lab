@@ -239,6 +239,232 @@ Architecture-level principle: the agent should answer only from approved capabil
 
 Detailed ambiguity, answerability, authorization, and evidence-boundary policy lives in [reference/SECURITY_AND_ANSWERABILITY.md](reference/SECURITY_AND_ANSWERABILITY.md).
 
+## M2 Agentic Runtime
+
+M1 is complete and remains preserved. The existing `/ask` flow stays unchanged:
+
+```text
+FastAPI
+    -> SemanticService
+    -> QueryService
+    -> PostgresReadRepository
+    -> business PostgreSQL
+    -> AIService
+```
+
+M2 introduces a separate agent-run API. `/ask` must not be routed through
+`AgentRuntime`.
+
+M2 builds one controlled production-style agentic application that is stateful,
+durable, testable, observable, cost-aware, bounded, failure-aware,
+HITL-capable, and deployable.
+
+Runtime principle:
+
+```text
+LLM proposes.
+Deterministic runtime code validates, authorizes, executes, persists,
+stops/retries, and escalates.
+```
+
+### Runtime Loop
+
+M2 has exactly one hardcoded workflow:
+
+```text
+START
+    -> propose action
+    -> shape validation
+    -> policy evaluation
+    -> execute approved action
+    -> collect result
+    -> update state
+    -> closure decision
+    -> continue / complete / fail / HITL
+```
+
+`workflow="saas_arr_v1"` is descriptive/version metadata only.
+
+Do not introduce `WorkflowDefinition`, `WorkflowRegistry`, `WorkflowFactory`, or
+configurable workflow abstractions until a second materially different agent
+task appears with different tools, prompts/goals, budgets, or stages.
+
+### AgentRuntime Ownership
+
+`AgentRuntime` owns:
+
+- Run lifecycle.
+- The single M2 execution loop.
+- `AgentState` mutation.
+- Approved tool dispatch.
+- Usage aggregation.
+- Persistence coordination.
+- Closure, failure, and HITL transitions.
+
+`AgentRuntime` must not own:
+
+- Business logic.
+- Provider-specific token parsing.
+- Pricing logic.
+- Direct business database access.
+- Policy-rule implementation.
+
+### AgentState
+
+`AgentState` must be persistable and resumable. `AgentRuntime` is the sole
+mutator.
+
+Preserve state requirements for:
+
+- `agent_run_id`.
+- `workflow` / `workflow_version`.
+- `prompt_version`.
+- `status`.
+- `closure_reason`.
+- `step_count`.
+- `llm_call_count`.
+- `tool_call_count`.
+- Token totals.
+- `estimated_cost_total`.
+- `started_at` / `elapsed_ms`.
+- Optimistic version.
+
+Do not store unbounded execution history as one growing JSON blob.
+
+### PolicyEvaluator
+
+`PolicyEvaluator` is a deterministic side-effect-free component:
+
+```text
+evaluate(state, proposed_action) -> Decision
+```
+
+`AgentState` stores the current consumed runtime values, including:
+
+- Step count.
+- LLM call count.
+- Tool call count.
+- Token usage.
+- Estimated cost.
+- Elapsed/runtime usage.
+
+Runtime configuration provides the configured limits and budgets.
+
+`PolicyEvaluator` reads `AgentState` plus the configured limits and
+deterministically evaluates whether a proposed action is allowed, including
+allowed tool, state permission, step/LLM/tool limits, token/cost/time budgets,
+and successful-action duplicate detection.
+
+It must not perform database I/O, LLM calls, state mutation, business logic, or
+own/mutate counters, usage totals, or budget state. `AgentRuntime` remains the
+sole `AgentState` mutator.
+
+### Tools
+
+All M2 business tools are read-only.
+
+Boundary:
+
+```text
+AgentRuntime
+    -> Tool
+    -> existing M1 Service
+    -> existing M1 Repository
+    -> business PostgreSQL
+```
+
+Tools are thin adapters only. They must not directly access the database, move
+business logic out of M1 services/repositories, or execute LLM-generated raw SQL.
+
+### Agent Persistence
+
+Agent execution data belongs in its own PostgreSQL schema: `agent`.
+
+Conceptual tables:
+
+- `agent.agent_runs`.
+- `agent.agent_steps`.
+- Later `agent.agent_llm_calls`.
+
+`agent_runs` stores current state and aggregate metadata. Preserve future
+requirements for idempotency key, optimistic version, workflow/version metadata,
+question, final answer, status, closure reason, runtime counters, usage totals,
+and timestamps.
+
+`agent_steps` is append-only execution history. Do not use one growing JSON
+history field.
+
+### Idempotency, Concurrency, and Transactions
+
+Freeze these M2 decisions:
+
+- Persist run creation before external model calls.
+- Use short-lived database sessions for agent-state persistence.
+- Never hold a database transaction open across an LLM/network call.
+- Keep agent persistence transactions separate from business-read transactions.
+- Persist meaningful state transitions and terminal states.
+- `POST /agent/runs` supports idempotent creation.
+- The same idempotency key returns the existing run.
+- Use optimistic versioning for concurrent state updates.
+- Reject stale updates.
+- Do not add distributed-locking infrastructure in M2.
+
+### Usage and Cost Observability
+
+Instrumentation begins early because usage data is also runtime-control data.
+
+```text
+Provider
+    -> M2 LLMClient/model adapter
+    -> normalized LLMCallUsage
+    -> AgentRuntime
+    -> AgentState counters
+    -> PolicyEvaluator / closure
+    -> persistence
+```
+
+Runtime must not parse provider-specific usage formats. Pricing lives in a
+small standalone pricing module/function, not in `AgentRuntime`.
+
+Normalized usage eventually includes provider/model, input/output/total tokens,
+latency, estimated cost, and status/error type. Per-call persistence
+(`agent_llm_calls`) is added during M2.7.
+
+### Closure, Context, and HITL
+
+Progressive closure controls eventually include max steps, max LLM calls, max
+tool calls, token budget, cost budget, wall-clock timeout, exact
+successful-action duplicate detection, deterministic evidence sufficiency, and
+explicit closure reason.
+
+Failed tool calls may be retried, and retries still consume budgets. Evidence
+sufficiency must be deterministic in M2.
+
+Context assembly must be bounded and deterministic. Initial context policy:
+
+- System/runtime instructions.
+- Original question.
+- Compact relevant state.
+- Bounded recent/relevant tool results.
+
+Advanced memory, summarization, vector retrieval, and semantic compression are
+out of scope.
+
+State must support future persisted pause/resume. Later
+`POST /agent/runs/{run_id}/resume` reloads persisted state, verifies
+`hitl_required`, records the human decision, re-enters runtime, and continues
+existing counters and budgets. Human approval does not bypass runtime policy.
+
+### M2 vs M7
+
+M2 owns runtime controls, run counters, usage/cost accounting, persisted
+run/step metadata, later per-call telemetry, structured logs, and basic
+production monitoring.
+
+M7 owns quality x cost x latency x reliability analysis, evaluation pipelines,
+prompt/model comparison, routing experiments, dashboards/alerts, richer tracing,
+and formal LLMOps integrations.
+
 ## Current Baseline Components
 
 The current implementation remains a small FastAPI baseline:

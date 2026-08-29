@@ -34,6 +34,18 @@ Explain why batch lifecycle metadata and generated business writes need differen
 
 ### Concept
 
+Deterministic agent runtime controls.
+
+Trigger/context:
+
+M2 architecture freezes the principle that the LLM proposes while deterministic runtime code validates, authorizes, executes, persists, stops/retries, and escalates.
+
+Learning goal:
+
+Understand why production agent systems need deterministic policy, lifecycle, budget, and persistence controls around LLM calls.
+
+### Concept
+
 SQL grain / join cardinality / join fan-out.
 
 Trigger/context:

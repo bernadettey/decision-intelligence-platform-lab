@@ -50,7 +50,23 @@ AI economics / token economics / resource allocation:
 
 ## Current Boundary
 
-Current milestone: **M1 Enterprise Data Foundation + Backend**.
+Current milestone: **M2 Agentic Investigation**.
+
+M1 is complete. Preserve the existing `/ask` flow:
+
+`FastAPI -> SemanticService -> QueryService -> PostgresReadRepository -> business PostgreSQL -> AIService`
+
+M2 introduces a separate agent-run API. Do not route `/ask` through `AgentRuntime`.
+
+Before M2 implementation:
+
+1. Read `docs/PROJECT_PLAN.md`.
+2. Read `docs/ARCHITECTURE.md`.
+3. Read the current milestone/backlog item.
+4. Inspect relevant code.
+5. Do not implement future milestones.
+
+Preserve FastAPI -> Service -> Repository boundaries. Prefer deterministic runtime controls over prompt-only constraints. Make one bounded change at a time.
 
 Do not start future milestone implementation until the current milestone scope is explicit. Do not create empty future architecture folders. Add directories only when they contain real code, tests, data, or documentation to justify their existence.
 
@@ -65,6 +81,7 @@ MAKER:
 - Runs relevant validation.
 - Reviews diff before commit.
 - Reports implementation decisions.
+- After each M2 implementation slice, lists files changed, explains request/data flow, runs relevant tests, inspects git diff, and stops for human review.
 
 REVIEWER:
 - Performs independent review.

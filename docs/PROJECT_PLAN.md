@@ -59,6 +59,51 @@ M1 is **Enterprise Data Foundation + Backend**.
 | M1.4 | PostgreSQL Data Layer | Local data access path for the backend. |
 | M1.5 | Backend Foundation | FastAPI boundary and tests for current M1 capability. |
 
+## M2 Implementation Sequence
+
+M2 is **Agentic Investigation**. M2 adds a separate agent-run API while
+preserving the existing M1 `/ask` flow.
+
+| Step | Name | Output |
+| --- | --- | --- |
+| M2.1a | Agent Run Lifecycle | `agent` schema, `agent_runs`, `AgentState`, repository, runtime lifecycle, `MAX_STEPS`, idempotent `POST /agent/runs`, `GET /agent/runs/{run_id}`, optimistic versioning, status and closure reason. No LLM and no tool. |
+| M2.1b | First Controlled Capability | M2 `LLMClient`, normalized usage, first read-only tool, `agent_steps`, and first controlled loop through existing M1 service/repository boundaries. |
+| Early CI checkpoint | Regression gate | GitHub Actions running pytest on push/PR while preserving M1 behavior. |
+| M2.2 | Runtime Counters + Bounded Context | Runtime counters and deterministic bounded context assembly. |
+| M2.3 | Shape Validation + PolicyEvaluator | Proposed-action validation and side-effect-free deterministic policy decisions. |
+| M2.4 | Progressive Closure | Step, LLM, tool, token, cost, duplicate-action, and evidence-sufficiency closure controls. |
+| M2.5 | Failure + Timeout Handling | Failure-aware retries, timeout behavior, and terminal-state persistence. |
+| M2.6 | HITL + Resume | Persisted pause/resume support without bypassing runtime policy. |
+| M2.7 | Observability Hardening | `agent_llm_calls`, per-call telemetry, minimal pricing, and queryable usage. |
+| M2.8 | Runtime Hardening + Tests | Production-oriented regression and failure-mode coverage. |
+| M2.9 | Docker | Containerized runtime support for the M2 application. |
+| M2.10 | AWS Production Vertical Slice | CI/CD, ECR, ECS/Fargate, PostgreSQL, IAM/secrets, health/logging/basic monitoring, and rollback awareness. |
+
+Optional after the M2 baseline:
+
+- LangGraph comparison spike.
+
+## M2 Architecture Freeze
+
+M2 builds one controlled production-style agentic application that is stateful,
+durable, testable, observable, cost-aware, bounded, failure-aware,
+HITL-capable, and deployable.
+
+Principle:
+
+```text
+LLM proposes.
+Deterministic runtime code validates, authorizes, executes, persists,
+stops/retries, and escalates.
+```
+
+M2 has exactly one hardcoded workflow. `workflow="saas_arr_v1"` is descriptive
+version metadata only, not a workflow registry key.
+
+Do not introduce `WorkflowDefinition`, `WorkflowRegistry`, `WorkflowFactory`, or
+configurable workflow abstractions until a second materially different agent
+task appears with different tools, prompts/goals, budgets, or stages.
+
 ## M1 Out Of Scope
 
 M1 should design for, but not implement:
@@ -70,6 +115,22 @@ M1 should design for, but not implement:
 - Full RLS/security enforcement.
 - AI ROI optimization.
 - Marginal resource allocation optimization.
+
+## M2 Out Of Scope
+
+M2 does not implement:
+
+- Write-capable tools.
+- LLM-generated SQL execution.
+- Multi-agent runtime.
+- Multiple configurable workflows.
+- Workflow definition, registry, or factory abstractions.
+- RAG, embeddings, fine-tuning, or advanced memory/context summarization.
+- Semantic duplicate detection.
+- Mandatory LangGraph or LangChain without concrete need.
+- Kubernetes/EKS, multi-region, Kafka, or sharding.
+- Full LLMOps platform, advanced dashboards/alerts, or dynamic model routing.
+- Async queue architecture unless a real requirement appears.
 
 ## Structure Rule
 
